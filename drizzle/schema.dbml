@@ -1,0 +1,219 @@
+enum registration_status_enum {
+  pending
+  approved
+  rejected
+}
+
+enum user_type_enum {
+  admin
+  expert
+  client
+}
+
+table company_brine_location {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  company_id uuid [not null]
+  region_name varchar(250) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table company_brine_sample {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  company_id uuid [not null]
+  brine_site_id uuid
+  file_path varchar [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table company_brine_site {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  brine_location_id uuid [not null]
+  power_availability_per_brine varchar(250) [not null]
+  stress_per_brine varchar(250) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table company_profile {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  company_name varchar(200) [not null]
+  company_hq varchar(250)
+  registration_status_id uuid
+  license_number varchar(50)
+  estimated_annual_revenue_id uuid
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+table policy {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name varchar(250) [not null]
+  description varchar(250) [not null]
+  path varchar [not null]
+  policy_type_id uuid [not null]
+  version varchar(50) [not null]
+  content text [not null]
+  effective_date date [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table policy_type {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name varchar(50) [not null, unique]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table prediction_result {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  brine_sample_id uuid [not null]
+  company_id uuid [not null]
+  model_version varchar(250) [not null]
+  chloralkali_in_depth_path varchar [not null]
+  chloralkali_summary_path varchar [not null]
+  chloralkali_comparison_path varchar [not null]
+  electrodialysis_in_depth_path varchar [not null]
+  electrodialysis_summary_path varchar [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table region {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name varchar(250) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table region_location {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  region_id uuid [not null]
+  name varchar(250) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table registration_progress {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid [not null, unique]
+  current_step integer [default: 1]
+  form_data json [default: `{}`]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table registration_status {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name varchar(20) [unique]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table revenue_range {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  name varchar(50) [unique]
+  min_revenue bigint [not null]
+  max_revenue bigint
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table reviewed_prediction_result {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  prediction_result_id uuid [not null, unique]
+  user_id uuid [not null]
+  final_result_path varchar [not null]
+  is_approved boolean [default: false]
+  rating varchar(250) [not null]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table track_activity {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  action varchar(250) [not null]
+  metadata varchar(250) [not null]
+  ip_address inet
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table user {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  email varchar [unique]
+  name varchar
+  password varchar
+  username varchar [unique]
+  image text
+  is_registration_complete boolean [default: false]
+  company_id uuid
+  is_active boolean [default: true]
+  is_superuser boolean [default: false]
+  date_joined timestamp [not null, default: `now()`]
+  last_login timestamp [default: `now()`]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table user_policy {
+  user_id uuid [not null]
+  policy_id uuid [not null]
+  agreed_at timestamp [not null, default: `now()`]
+  is_accepted boolean [default: true]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table user_type {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_type_option user_type_enum [not null, unique]
+  created_at timestamp [not null, default: `now()`]
+  updated_at timestamp [not null, default: `now()`]
+}
+
+table user_user_type {
+  user_id uuid [not null]
+  user_type_id uuid [not null]
+}
+
+ref company_brine_location_company_id_company_profile_id_fk: company_brine_location.company_id > company_profile.id [delete: cascade, update: no action]
+
+ref company_brine_sample_company_id_company_profile_id_fk: company_brine_sample.company_id > company_profile.id [delete: cascade, update: no action]
+
+ref company_brine_sample_brine_site_id_company_brine_site_id_fk: company_brine_sample.brine_site_id > company_brine_site.id [delete: cascade, update: no action]
+
+ref company_brine_site_brine_location_id_company_brine_location_id_fk: company_brine_site.brine_location_id > company_brine_location.id [delete: cascade, update: no action]
+
+ref company_profile_registration_status_id_registration_status_id_fk: company_profile.registration_status_id > registration_status.id [delete: cascade, update: no action]
+
+ref company_profile_estimated_annual_revenue_id_revenue_range_id_fk: company_profile.estimated_annual_revenue_id > revenue_range.id [delete: cascade, update: no action]
+
+ref policy_policy_type_id_policy_type_id_fk: policy.policy_type_id > policy_type.id [delete: cascade, update: no action]
+
+ref prediction_result_brine_sample_id_company_brine_sample_id_fk: prediction_result.brine_sample_id > company_brine_sample.id [delete: cascade, update: no action]
+
+ref prediction_result_company_id_company_profile_id_fk: prediction_result.company_id > company_profile.id [delete: cascade, update: no action]
+
+ref region_location_region_id_region_id_fk: region_location.region_id > region.id [delete: cascade, update: no action]
+
+ref registration_progress_user_id_user_id_fk: registration_progress.user_id > user.id [delete: cascade, update: no action]
+
+ref reviewed_prediction_result_prediction_result_id_prediction_result_id_fk: reviewed_prediction_result.prediction_result_id > prediction_result.id [delete: cascade, update: no action]
+
+ref reviewed_prediction_result_user_id_user_id_fk: reviewed_prediction_result.user_id > user.id [delete: cascade, update: no action]
+
+ref track_activity_user_id_user_id_fk: track_activity.user_id > user.id [delete: cascade, update: no action]
+
+ref user_company_id_company_profile_id_fk: user.company_id > company_profile.id [delete: set null, update: no action]
+
+ref user_policy_user_id_user_id_fk: user_policy.user_id > user.id [delete: cascade, update: no action]
+
+ref user_policy_policy_id_policy_id_fk: user_policy.policy_id > policy.id [delete: cascade, update: no action]
+
+ref user_user_type_user_id_user_id_fk: user_user_type.user_id > user.id [delete: cascade, update: no action]
+
+ref user_user_type_user_type_id_user_type_id_fk: user_user_type.user_type_id > user_type.id [delete: cascade, update: no action]

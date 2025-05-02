@@ -1,0 +1,3 @@
+ALTER TABLE "company_brine_sample" ALTER COLUMN "brine_site_id" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "company_brine_sample" ADD COLUMN "company_id" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "company_brine_sample" ADD CONSTRAINT "company_brine_sample_company_id_company_profile_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."company_profile"("id") ON DELETE cascade ON UPDATE no action;

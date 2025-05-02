@@ -1,0 +1,1 @@
+CREATE TYPE "public"."user_type_enum" AS ENUM('admin', 'expert', 'client');
