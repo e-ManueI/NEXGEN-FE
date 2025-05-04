@@ -150,6 +150,7 @@ table user {
   username varchar [unique]
   image text
   is_registration_complete boolean [default: false]
+  role user_type_enum [not null, default: 'client']
   company_id uuid
   is_active boolean [default: true]
   is_superuser boolean [default: false]
@@ -166,18 +167,6 @@ table user_policy {
   is_accepted boolean [default: true]
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
-}
-
-table user_type {
-  id uuid [pk, not null, default: `gen_random_uuid()`]
-  user_type_option user_type_enum [not null, unique]
-  created_at timestamp [not null, default: `now()`]
-  updated_at timestamp [not null, default: `now()`]
-}
-
-table user_user_type {
-  user_id uuid [not null]
-  user_type_id uuid [not null]
 }
 
 ref company_brine_location_company_id_company_profile_id_fk: company_brine_location.company_id > company_profile.id [delete: cascade, update: no action]
@@ -213,7 +202,3 @@ ref user_company_id_company_profile_id_fk: user.company_id > company_profile.id 
 ref user_policy_user_id_user_id_fk: user_policy.user_id > user.id [delete: cascade, update: no action]
 
 ref user_policy_policy_id_policy_id_fk: user_policy.policy_id > policy.id [delete: cascade, update: no action]
-
-ref user_user_type_user_id_user_id_fk: user_user_type.user_id > user.id [delete: cascade, update: no action]
-
-ref user_user_type_user_type_id_user_type_id_fk: user_user_type.user_type_id > user_type.id [delete: cascade, update: no action]

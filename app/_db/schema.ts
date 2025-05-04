@@ -37,13 +37,6 @@ export const revenueRange = pgTable("revenue_range", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const userType = pgTable("user_type", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userTypeOption: userTypeEnum("user_type_option").unique().notNull(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-  updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
 export const companyProfile = pgTable("company_profile", {
   id: uuid("id").primaryKey().defaultRandom(),
   companyName: varchar("company_name", { length: 200 }).notNull(),
@@ -69,6 +62,7 @@ export const user = pgTable("user", {
   username: varchar("username").unique(),
   image: text("image"),
   isRegistrationComplete: boolean("is_registration_complete").default(false),
+  role: userTypeEnum("role").notNull().default("client"),
   companyId: uuid("company_id").references(() => companyProfile.id, {
     onDelete: "set null",
   }),
@@ -78,18 +72,6 @@ export const user = pgTable("user", {
   lastLogin: timestamp("last_login").defaultNow(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
-
-/// An M2M table between `user` and `user_type`
-///
-/// Each User can have multiple User Types (roles), and each User Type can belong to multiple Users.
-export const userUserType = pgTable("user_user_type", {
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  userTypeId: uuid("user_type_id")
-    .notNull()
-    .references(() => userType.id, { onDelete: "cascade" }),
 });
 
 export const registrationProgress = pgTable("registration_progress", {

@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/app/_db";
-import { companyProfile, user, userType, userUserType } from "@/app/_db/schema";
+import { companyProfile, user } from "@/app/_db/schema";
 import { signIn } from "@/lib/auth";
 import { signupSchema } from "@/lib/zod/auth";
 import { SignupState } from "@/lib/zod/types/auth";
@@ -44,24 +44,25 @@ export async function signupAction(
     return { success: false, errors: { email: ["Email already exists"] } };
   }
 
-  // 3. Hash the password
+  // 3. Hash the password + make iDs
   const hashedPassword = await bcrypt.hash(password, 10);
-
   const userId = uuidv4();
   const companyId = uuidv4();
 
   // 4. Create the user
   try {
     await db.transaction(async (tx) => {
-      // Insert company profile (minimal fields for now)
+      // 4a. Insert company profile (minimal fields for now)
       await tx.insert(companyProfile).values({
         id: companyId,
         companyName: companyName,
+        // everything else (companyHq, registrationStatusId, licenseNumber,
+        // estimatedAnnualRevenueId) will default to NULL until collected
         createdAt: new Date(),
         updatedAt: new Date(),
       });
 
-      // Insert user
+      // 4b. Insert user
       await tx.insert(user).values({
         id: userId,
         email: email,
@@ -71,33 +72,12 @@ export async function signupAction(
         image: "",
         companyId,
         isRegistrationComplete: true,
+        // role defaults to "client" per the enum default
+        // isActive, isSuperUser defaults as defined in the schema
         dateJoined: new Date(),
         lastLogin: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
-
-      // Assign 'client' role
-      let clientType = await tx
-        .select({ id: userType.id })
-        .from(userType)
-        .where(eq(userType.userTypeOption, "client"))
-        .limit(1);
-
-      if (!clientType[0]) {
-        const newClientTypeId = uuidv4();
-        await tx.insert(userType).values({
-          id: newClientTypeId,
-          userTypeOption: "client",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-        clientType = [{ id: newClientTypeId }];
-      }
-
-      await tx.insert(userUserType).values({
-        userId,
-        userTypeId: clientType[0].id,
       });
     });
 

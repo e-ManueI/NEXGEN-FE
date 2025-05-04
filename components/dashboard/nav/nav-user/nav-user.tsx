@@ -33,6 +33,7 @@ export function NavUser({
     name: string;
     email: string;
     avatar: string;
+    role: string;
   };
 }) {
   const { isMobile } = useSidebar();
@@ -72,7 +73,9 @@ export function NavUser({
                   <AvatarFallback className="rounded-lg">N/A</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
+                  <span className="truncate font-medium">
+                    {user.name} ({user.role})
+                  </span>
                   <span className="text-muted-foreground truncate text-xs">
                     {user.email}
                   </span>

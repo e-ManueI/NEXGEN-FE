@@ -1,9 +1,9 @@
 import { db } from "@/app/_db";
 import { user } from "@/app/_db/schema";
-import NextAuth from "next-auth";
 import { eq } from "drizzle-orm";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
+import NextAuth from "next-auth";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -56,6 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             id: u.id,
             email: u.email!,
             name: u.name,
+            role: u.role,
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -74,15 +75,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     // add `id` into the JWT on sign in
     async jwt({ token, user }) {
-      if (user) token.id = user.id;
+      if (user) {
+        if (!user.id) {
+          throw new Error("User ID is undefined");
+        }
+        token.id = user.id;
+        token.role = user.role;
+      }
       return token;
     },
-    // expose `id` on the session client-side
+    // expose `id` and `role` on the session client-side
     async session({ session, token }) {
-      if (session.user) session.user.id = token.id as string;
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+      }
       return session;
     },
-    // Update lastLogin timestamp on succesful sign-in
+    // Update lastLogin timestamp on successful sign-in
     async signIn({ user: signedInUser }) {
       if (signedInUser) {
         await db

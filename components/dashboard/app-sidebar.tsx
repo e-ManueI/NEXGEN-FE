@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/sidebar";
 import NavUserWrapper from "./nav/nav-user/nav-user-wrapper";
 import { AppRoutes } from "@/lib/routes";
+import { useSession } from "next-auth/react";
 
 const data = {
   navMain: [
@@ -31,11 +32,13 @@ const data = {
       title: "Dashboard",
       url: AppRoutes.dashboard,
       icon: IconDashboard,
+      allowedRoles: [],
     },
     {
       title: "Users",
       url: "#",
       icon: IconUsers,
+      allowedRoles: ["admin"],
     },
   ],
   navSecondary: [
@@ -43,6 +46,7 @@ const data = {
       title: "Settings",
       url: "#",
       icon: IconSettings,
+      allowedRoles: ["admin", "expert"],
     },
     // {
     //   title: "Get Help",
@@ -70,6 +74,20 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: session } = useSession();
+
+  // Filter by role
+  const visibleNavMain = data.navMain.filter((item) => {
+    // if there’s no allowedRoles field, or it’s an empty array, show to everyone
+    if (!item.allowedRoles || item.allowedRoles.length === 0) {
+      return true;
+    }
+    // otherwise only show if the user has at least one of the allowed roles
+    return Array.isArray(session?.user.role)
+      ? session.user.role.some((r) => item.allowedRoles!.includes(r))
+      : item.allowedRoles!.includes(session?.user.role ?? "");
+  });
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -88,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={visibleNavMain} />
         {/* <NavModels items={data.models} /> */}
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
