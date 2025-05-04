@@ -4,10 +4,7 @@ import { signIn } from "@/lib/auth";
 import { loginSchema } from "@/lib/zod/auth";
 import { LoginState } from "@/lib/zod/types/auth";
 
-export async function loginAction(
-  prevState: LoginState,
-  formData: FormData,
-): Promise<LoginState> {
+export async function loginAction(formData: FormData): Promise<LoginState> {
   // 1. Parse and validate form data
   const raw = Object.fromEntries(formData.entries());
   const parsed = loginSchema.safeParse(raw);

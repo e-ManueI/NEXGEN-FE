@@ -13,7 +13,6 @@ import {
 // import { NavModels } from "@/components/dashboard/nav/nav-documents";
 import { NavMain } from "@/components/dashboard/nav/nav-main";
 // import { NavSecondary } from "@/components/dashboard/nav/nav-secondary";
-import { NavUser } from "@/components/dashboard/nav/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -23,13 +22,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import NavUserWrapper from "./nav/nav-user/nav-user-wrapper";
 
 const data = {
-  user: {
-    name: "NexGen Admin",
-    email: "m@nexgen.com",
-    avatar: "",
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -97,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUserWrapper />
       </SidebarFooter>
     </Sidebar>
   );

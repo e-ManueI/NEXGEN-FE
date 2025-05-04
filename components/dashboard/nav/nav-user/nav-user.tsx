@@ -24,6 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "next-auth/react";
+import { AppRoutes } from "@/lib/routes";
 
 export function NavUser({
   user,
@@ -93,7 +94,7 @@ export function NavUser({
             <DropdownMenuItem asChild>
               <button
                 type="button"
-                onClick={() => void signOut({ callbackUrl: "/" })}
+                onClick={() => void signOut({ callbackUrl: AppRoutes.login })}
                 className="flex items-center gap-2"
               >
                 <IconLogout />

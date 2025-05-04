@@ -23,8 +23,12 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [state, formAction] = useActionState(loginAction, initialState);
   const router = useRouter();
+  //  Destructure and ignore the prevState, then call loginAction with the form payload
+  const [state, formAction] = useActionState(
+    (_prevState: unknown, formData: FormData) => loginAction(formData),
+    initialState,
+  );
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
