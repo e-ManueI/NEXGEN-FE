@@ -68,6 +68,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
+    // only allow through if there _is_ an auth.user
+    async authorized({ auth }) {
+      return Boolean(auth?.user);
+    },
     // add `id` into the JWT on sign in
     async jwt({ token, user }) {
       if (user) token.id = user.id;
@@ -90,74 +94,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 });
-
-// import NextAuth from "next-auth";
-// import Credentials from "next-auth/providers/credentials";
-// import type { Provider } from "next-auth/providers";
-// import { db } from "@/app/_db";
-// import bcrypt from "bcrypt";
-// import { user } from "@/app/_db/schema";
-// import { eq } from "drizzle-orm";
-
-// const providers: Provider[] = [
-//   Credentials({
-//     credentials: {
-//       email: { label: "Email", type: "email" },
-//       password: { label: "Password", type: "password" },
-//     },
-//     async authorize(
-//       credentials: Partial<Record<"email" | "password", unknown>>,
-//     ) {
-//       const email = credentials.email as string | undefined;
-//       const password = credentials.password as string | undefined;
-
-//       if (!email || !password || password !== "password") return null;
-
-//       try {
-//         // Query the user by email
-//         const users = await db.select().from(user).where(eq(user.email, email));
-//         const foundUser = users[0];
-
-//         // Check if user exists and is active
-//         if (!foundUser || !foundUser.isActive) {
-//           return null;
-//         }
-
-//         // Verify the password
-//         const isValid =
-//           foundUser.password && bcrypt.compare(password, foundUser.password);
-//         if (!isValid) {
-//           return null;
-//         }
-
-//         // Return user object for Auth.js
-//         return {
-//           id: foundUser.id,
-//           email: foundUser.email,
-//           name: `${foundUser.name}`,
-//         };
-//       } catch (error) {
-//         console.error("Authentication error:", error);
-//         return null;
-//       }
-//     },
-//   }),
-// ];
-
-// export const providerMap = providers
-//   .map((provider) => {
-//     if (typeof provider === "function") {
-//       const providerData = provider();
-//       return { id: providerData.id, name: providerData.name };
-//     } else {
-//       return { id: provider.id, name: provider.name };
-//     }
-//   })
-//   .filter((provider) => provider.id !== "credentials");
-
-// export const { handlers, auth, signIn, signOut } = NextAuth({
-//   providers,
-//   pages: {
-//     signIn: "/login",
-//   },
-// });
