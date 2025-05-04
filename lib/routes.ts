@@ -3,5 +3,8 @@ export const AppRoutes = {
   home: "/",
   login: "/login",
   signup: "/signup",
+
+  // Dashboard routes
   dashboard: "/dashboard",
+  makePredictions: "/dashboard/make-predictions",
 };

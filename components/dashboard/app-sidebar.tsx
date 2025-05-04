@@ -23,12 +23,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import NavUserWrapper from "./nav/nav-user/nav-user-wrapper";
+import { AppRoutes } from "@/lib/routes";
 
 const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: AppRoutes.dashboard,
       icon: IconDashboard,
     },
     {
