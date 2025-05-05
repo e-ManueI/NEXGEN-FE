@@ -7,4 +7,5 @@ export const AppRoutes = {
   // Dashboard routes
   dashboard: "/dashboard",
   makePredictions: "/dashboard/make-predictions",
+  users: "/dashboard/users",
 };

@@ -11,7 +11,6 @@ import {
 } from "@tabler/icons-react";
 
 // import { NavModels } from "@/components/dashboard/nav/nav-documents";
-import { NavMain } from "@/components/dashboard/nav/nav-main";
 // import { NavSecondary } from "@/components/dashboard/nav/nav-secondary";
 import {
   Sidebar,
@@ -25,6 +24,7 @@ import {
 import NavUserWrapper from "./nav/nav-user/nav-user-wrapper";
 import { AppRoutes } from "@/lib/routes";
 import { useSession } from "next-auth/react";
+import { NavMain } from "./nav/nav-main";
 
 const data = {
   navMain: [
@@ -36,7 +36,7 @@ const data = {
     },
     {
       title: "Users",
-      url: "#",
+      url: AppRoutes.users,
       icon: IconUsers,
       allowedRoles: ["admin"],
     },

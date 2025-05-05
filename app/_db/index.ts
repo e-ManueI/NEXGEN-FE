@@ -1,4 +1,4 @@
-import * as schema from "@/components/dashboard/home/data-table/data-tabs";
+import * as schema from "@/app/_db/schema";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import { Pool } from "@neondatabase/serverless";
 
