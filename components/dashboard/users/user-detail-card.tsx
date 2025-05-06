@@ -1,11 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { EditUserDialog } from "./edit-user-dialog";
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
+import { User } from "./user-table";
 
 export interface UserDetailCardProps {
   id: string;
@@ -16,11 +18,22 @@ export interface UserDetailCardProps {
 }
 
 export const UserDetailCard: React.FC<UserDetailCardProps> = ({
+  id,
   firstName,
   lastName,
   email,
   role,
 }) => {
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  // 2) Build the full User shape for the dialog
+  const user: User = {
+    id,
+    name: `${firstName} ${lastName}`,
+    email,
+    companyName: "", // fill in or extend props if you have it
+    role,
+    isActive: "active", // ditto
+  };
   return (
     <Card className="md:col-span-1">
       <CardContent className="pt-6">
@@ -38,13 +51,21 @@ export const UserDetailCard: React.FC<UserDetailCardProps> = ({
           <h2 className="text-xl font-bold">{`${firstName} ${lastName}`}</h2>
           <p className="text-muted-foreground text-sm">{email}</p>
           <Badge className="mb-4">{role}</Badge>
-          <Button
-            variant="outline"
-            className="mt-4 flex w-full items-center justify-center gap-2"
+
+          <EditUserDialog
+            open={editingUser !== null}
+            onOpenChange={(open) => {
+              setEditingUser(open ? user : null);
+            }}
           >
-            <Edit2 className="h-4 w-4" />
-            <span>Edit Profile</span>
-          </Button>
+            <Button
+              variant="outline"
+              className="mt-4 flex w-full items-center justify-center gap-2"
+            >
+              <Edit2 className="h-4 w-4" />
+              <span>Edit Profile</span>
+            </Button>
+          </EditUserDialog>
         </div>
       </CardContent>
     </Card>
