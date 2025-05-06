@@ -4,11 +4,15 @@ import React from "react";
 
 const MakePredictions = () => {
   return (
-    <div className="">
-      <h1 className="mb-6 text-2xl font-bold">
-        Lithium Extraction Feasibility Analysis
-      </h1>
-      <LithiumDashboard />
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 md:gap-6">
+          <h1 className="text-2xl font-bold">
+            Lithium Extraction Feasibility Analysis
+          </h1>
+          <LithiumDashboard />
+        </div>
+      </div>
     </div>
   );
 };

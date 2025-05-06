@@ -63,9 +63,9 @@ export default function LithiumDashboard() {
   };
 
   return (
-    <div className="cp; grid grid-cols-1 gap-x-4 md:grid-cols-4">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
       {/* Input Panel */}
-      <Card className="col-span-full xl:col-span-1">
+      <Card className="col-span-full md:col-span-1 lg:col-span-1">
         <CardHeader className="pb-3">
           <CardTitle className="text-xl">Input Parameters</CardTitle>
           <CardDescription>
@@ -147,17 +147,7 @@ export default function LithiumDashboard() {
                               Number.parseFloat(e.target.value) || 0,
                             )
                           }
-                          className="h-8 rounded-none text-center focus:border-none focus:ring-0"
-                          style={{
-                            /* Chrome, Safari, Edge, Opera */
-                            WebkitAppearance: "none",
-                            /* Firefox */
-                            MozAppearance: "textfield",
-                            /* standard */
-                            appearance: "none",
-                            /* reset default margin so the field doesn’t jump */
-                            margin: 0,
-                          }}
+                          className="z-30 h-8 rounded-none text-center"
                           step={0.1}
                         />
                         <Button
@@ -190,7 +180,7 @@ export default function LithiumDashboard() {
       </Card>
 
       {/* Results Panel */}
-      <Card className="xl:col-span-3">
+      <Card className="col-span-full md:col-span-2 lg:col-span-3">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Beaker className="h-5 w-5 text-green-500" />
