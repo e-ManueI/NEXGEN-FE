@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Mnda } from "./_components/one-mnda";
-import { CompanyInfo } from "./_components/two-company-info";
-import BrineLocationData from "./_components/three-brine-location/three_brine-uploader";
+import { Mnda } from "./one-mnda";
+import { CompanyInfo } from "./two-company-info";
 import { Stepper } from "@/components/shared/stepper/stepper";
+import BrineLocationData from "./three_brine-uploader";
 
 export default function RegisterStepperForm() {
   const [isTermsChecked, setIsTermsChecked] = useState(false);

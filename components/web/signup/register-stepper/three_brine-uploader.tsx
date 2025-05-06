@@ -34,7 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import LocationSelector from "./location-selector";
+import LocationSelector from "@/components/ui/location-selector";
 
 type Site = {
   id: string;

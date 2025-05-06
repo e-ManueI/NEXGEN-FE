@@ -1,3 +1,4 @@
+"use client";
 import { ChartAreaInteractive } from "@/components/dashboard/home/chart-area-interactive";
 import {
   AnalyticsCardData,
@@ -5,7 +6,7 @@ import {
 } from "@/components/ui/analytics-cards";
 
 import data from "./data.json";
-import { DataTable } from "@/components/shared/data-table/data-tabs";
+import { DataTabs } from "@/components/shared/data-table/data-tabs";
 
 const cards: AnalyticsCardData[] = [
   {
@@ -39,12 +40,10 @@ export default function DashboardHome() {
     <>
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <div className="flex flex-col gap-4 md:gap-6">
             <AnalyticsCards data={cards} />
-            <div className="px-4 lg:px-6">
-              <ChartAreaInteractive />
-            </div>
-            <DataTable data={data} />
+            <ChartAreaInteractive />
+            <DataTabs data={data} />
           </div>
         </div>
       </div>

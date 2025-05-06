@@ -246,7 +246,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   },
 ];
 
-export function DataTable({
+export function DataTabs({
   data: initialData,
 }: {
   data: z.infer<typeof schema>[];
@@ -294,7 +294,7 @@ export function DataTable({
       defaultValue="outline"
       className="w-full flex-col justify-start gap-6"
     >
-      <div className="flex items-center justify-between px-4 lg:px-6">
+      <div className="flex items-center justify-between">
         <Label htmlFor="view-selector" className="sr-only">
           View
         </Label>
@@ -492,7 +492,7 @@ export function DataTable({
           </div>
         </div>
       </TabsContent> */}
-      <TabsContent value="outline" className="flex flex-col px-4 lg:px-6">
+      <TabsContent value="outline" className="flex flex-col">
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
       <TabsContent
@@ -501,13 +501,10 @@ export function DataTable({
       >
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
-      <TabsContent value="key-personnel" className="flex flex-col px-4 lg:px-6">
+      <TabsContent value="key-personnel" className="flex flex-col">
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
-      <TabsContent
-        value="focus-documents"
-        className="flex flex-col px-4 lg:px-6"
-      >
+      <TabsContent value="focus-documents" className="flex flex-col">
         <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
       </TabsContent>
     </Tabs>

@@ -58,7 +58,7 @@ const AdditionalUserInfoCard: React.FC<AdditionalUserInfoCardProps> = ({
                 <Badge
                   className={
                     status === "active"
-                      ? "bg-green-500 hover:bg-green-600"
+                      ? "bg-primary"
                       : "bg-gray-500 hover:bg-gray-600"
                   }
                 >
