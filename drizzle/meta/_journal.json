@@ -57,6 +57,20 @@
       "when": 1746394460650,
       "tag": "0007_whole_lucky_pierre",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1746618217728,
+      "tag": "0008_aromatic_roland_deschain",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1746618376496,
+      "tag": "0009_exotic_shiver_man",
+      "breakpoints": true
     }
   ]
 }

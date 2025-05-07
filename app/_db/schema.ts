@@ -63,9 +63,11 @@ export const user = pgTable("user", {
   image: text("image"),
   isRegistrationComplete: boolean("is_registration_complete").default(false),
   role: userTypeEnum("role").notNull().default("client"),
-  companyId: uuid("company_id").references(() => companyProfile.id, {
-    onDelete: "set null",
-  }),
+  companyId: uuid("company_id")
+    .references(() => companyProfile.id, {
+      onDelete: "set null",
+    })
+    .notNull(),
   isActive: boolean("is_active").default(true),
   isSuperuser: boolean("is_superuser").default(false),
   dateJoined: timestamp("date_joined").notNull().defaultNow(),
@@ -178,12 +180,16 @@ export const reviewedPredictionResult = pgTable("reviewed_prediction_result", {
     .unique()
     .notNull()
     .references(() => predictionResult.id, { onDelete: "cascade" }),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  finalResultPath: varchar("final_result_path").notNull(),
+  modelVersion: varchar("model_version", { length: 250 }).notNull(),
+  chloralkaliInDepthPath: varchar("chloralkali_in_depth_path").notNull(),
+  chloralkaliSummaryPath: varchar("chloralkali_summary_path").notNull(),
+  chloralkaliComparisonPath: varchar("chloralkali_comparison_path").notNull(),
+  electrodialysisInDepthPath: varchar(
+    "electrodialysis_in_depth_path",
+  ).notNull(),
+  electrodialysisSummaryPath: varchar("electrodialysis_summary_path").notNull(),
   isApproved: boolean("is_approved").default(false),
-  rating: varchar("rating", { length: 250 }).notNull(), // column use to be determined per project requirements
+  rating: varchar("rating", { length: 250 }), // column use to be determined per project requirements
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

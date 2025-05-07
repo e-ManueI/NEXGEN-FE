@@ -1,0 +1,1 @@
+ALTER TABLE "reviewed_prediction_result" ALTER COLUMN "rating" DROP NOT NULL;
