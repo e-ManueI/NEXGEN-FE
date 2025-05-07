@@ -25,7 +25,7 @@ const UserDetailsHome = () => {
       status: "Approved",
       modelVersion: "v1.0",
       approvedBy: "John Doe",
-      createdAt: "2023-03-15T10:00:00Z",
+      approvedAt: "2023-03-15T10:00:00Z",
     },
     {
       predictionId: "2",
@@ -34,7 +34,7 @@ const UserDetailsHome = () => {
       status: "Approved",
       modelVersion: "v1.0",
       approvedBy: "John Doe",
-      createdAt: "2023-03-15T10:00:00Z",
+      approvedAt: "2023-03-15T10:00:00Z",
     },
   ];
 

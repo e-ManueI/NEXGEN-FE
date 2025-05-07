@@ -16,14 +16,14 @@ export type AnalyticsCardData = {
   /** The main numeric/stat value to display */
   value: string | number;
   /** direction of the trend badge */
-  trend: {
+  trend?: {
     /** "up" shows a green up arrow, "down" shows a red down arrow */
     direction: "up" | "down";
     /** e.g. "+12.5%", "-20%", or just "+24" */
     amount: string;
   };
   /** Footer text, e.g. “Trending up this month” */
-  footerText: string;
+  footerText?: string;
 };
 
 interface AnalyticsCardProps {
@@ -33,7 +33,7 @@ interface AnalyticsCardProps {
 export function AnalyticsCard({ data }: AnalyticsCardProps) {
   const { description, value, trend, footerText } = data;
   const TrendIcon =
-    trend.direction === "up" ? IconTrendingUp : IconTrendingDown;
+    trend?.direction === "up" ? IconTrendingUp : IconTrendingDown;
 
   return (
     <Card className="@container/card">
@@ -42,18 +42,22 @@ export function AnalyticsCard({ data }: AnalyticsCardProps) {
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
           {value}
         </CardTitle>
-        <CardAction>
-          <Badge variant="outline">
-            <TrendIcon />
-            {trend.amount}
-          </Badge>
-        </CardAction>
+        {trend && (
+          <CardAction>
+            <Badge variant="outline">
+              <TrendIcon />
+              {trend.amount}
+            </Badge>
+          </CardAction>
+        )}
       </CardHeader>
-      <CardFooter className="flex-col items-start gap-1.5 text-sm">
-        <div className="line-clamp-1 flex gap-2 font-medium">
-          {footerText} <TrendIcon className="size-4" />
-        </div>
-      </CardFooter>
+      {footerText && (
+        <CardFooter className="flex-col items-start gap-1.5 text-sm">
+          <div className="line-clamp-1 flex gap-2 font-medium">
+            {footerText} {trend && <TrendIcon className="size-4" />}
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }

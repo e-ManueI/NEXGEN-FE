@@ -11,27 +11,19 @@ import { DataTabs } from "@/components/shared/data-table/data-tabs";
 const cards: AnalyticsCardData[] = [
   {
     description: "Total Predictions",
-    value: "1,250.00",
-    trend: { direction: "up", amount: "+12.5%" },
-    footerText: "Trending up this month",
+    value: "1.00",
   },
   {
     description: "Total Users",
-    value: 1234,
-    trend: { direction: "down", amount: "-20%" },
-    footerText: "Down 20% this period",
+    value: 2,
   },
   {
     description: "Active Users",
-    value: 458,
-    trend: { direction: "up", amount: "+12.5%" },
-    footerText: "Strong user retention",
+    value: 2,
   },
   {
-    description: "Pending Approvals",
-    value: 24,
-    trend: { direction: "up", amount: "+24" },
-    footerText: "Pending approvals",
+    description: "Pending Prediction Reviews",
+    value: 0,
   },
 ];
 

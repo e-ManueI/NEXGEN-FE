@@ -15,57 +15,25 @@ export default function UserHome() {
       role: "Admin",
       isActive: "Yes",
     },
-    {
-      id: "1",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      companyName: "Acme Corp",
-      role: "Admin",
-      isActive: "Yes",
-    },
-    {
-      id: "1",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      companyName: "Acme Corp",
-      role: "Admin",
-      isActive: "Yes",
-    },
-    {
-      id: "1",
-      name: "Alice Johnson",
-      email: "alice@example.com",
-      companyName: "Acme Corp",
-      role: "Admin",
-      isActive: "Yes",
-    },
     // …more users
   ];
 
   const userCards: AnalyticsCardData[] = [
     {
       description: "Total Users",
-      value: "1,250.00",
-      trend: { direction: "up", amount: "+12.5%" },
-      footerText: "Trending up this month",
+      value: 1,
     },
     {
       description: "New Users",
-      value: 1234,
-      trend: { direction: "down", amount: "-20%" },
-      footerText: "Down 20% this period",
+      value: 1,
     },
     {
       description: "Active Users",
-      value: 458,
-      trend: { direction: "up", amount: "+12.5%" },
-      footerText: "Strong user retention",
+      value: 1,
     },
     {
       description: "Deactivated Users",
-      value: 24,
-      trend: { direction: "up", amount: "+24" },
-      footerText: "Pending activations",
+      value: 0,
     },
   ];
 

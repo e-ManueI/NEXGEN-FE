@@ -15,7 +15,7 @@ export type Submission = {
   status: string;
   modelVersion: string;
   approvedBy: string;
-  createdAt: string;
+  approvedAt: string;
 };
 
 const columns: ColumnDef<Submission>[] = [
@@ -40,7 +40,7 @@ const columns: ColumnDef<Submission>[] = [
     header: "Approved By",
   },
   {
-    accessorKey: "createdAt",
+    accessorKey: "approvedAt",
     header: "Created At",
   },
 ];
