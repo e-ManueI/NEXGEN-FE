@@ -34,20 +34,23 @@ export function LoginForm({
     password: "",
   });
 
+  console.log("LoginForm state:", state); // Debug log
+
   // Whenever the action returns a message, show it as a toast
   useEffect(() => {
-    if (state.message) {
+    console.log("useEffect state:", state); // Debug log
+    if (state && state.message) {
       if (state.success) {
         toast.success(state.message);
+
+        // Redirect to dashboard
+        router.push(AppRoutes.dashboard);
 
         // Clear the form
         setFormData({
           email: "",
           password: "",
         });
-
-        // Redirect to dashboard
-        router.push(AppRoutes.dashboard);
       } else {
         toast.error(state.message, {
           id: `login-error-${Date.now()}`,

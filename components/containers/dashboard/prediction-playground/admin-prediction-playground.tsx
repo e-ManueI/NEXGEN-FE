@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function LithiumDashboard() {
+export default function AdminPredictionPlayground() {
   // State for input values
   const [inputMode, setInputMode] = useState("manual");
   const [concentrations, setConcentrations] = useState({
@@ -526,7 +526,7 @@ export default function LithiumDashboard() {
               </TabsContent>
 
               <TabsContent value="chlr-depth">
-                <div className="space-y-4">
+                {/* <div className="space-y-4">
                   <h3 className="text-lg font-medium">Detailed Analysis</h3>
                   <p>
                     Detailed extraction analysis would be displayed here,
@@ -545,7 +545,7 @@ export default function LithiumDashboard() {
                       </li>
                     </ul>
                   </div>
-                </div>
+                </div> */}
               </TabsContent>
 
               <TabsContent value="chlr-comparison">

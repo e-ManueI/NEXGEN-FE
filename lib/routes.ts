@@ -8,4 +8,4 @@ export const AppRoutes = {
   dashboard: "/dashboard",
   makePredictions: "/dashboard/make-predictions",
   users: "/dashboard/users",
-};
+} as const;

@@ -3,7 +3,9 @@ import {
   AnalyticsCardData,
   AnalyticsCards,
 } from "@/components/ui/analytics-cards";
-import UserTable, { User } from "@/components/dashboard/users/user-table";
+import UserTable, {
+  User,
+} from "@/components/containers/dashboard/users/user-table";
 
 export default function UserHome() {
   const sampleData: User[] = [

@@ -22,7 +22,6 @@ export async function loginAction(formData: FormData): Promise<LoginState> {
   try {
     // This throws on invalid credentials
     await signIn("credentials", { email, password, redirect: false });
-    return { success: true, message: "Login successful" };
   } catch (err: unknown) {
     console.error("[auth][error]", err);
     // pick a generic message
@@ -36,4 +35,6 @@ export async function loginAction(formData: FormData): Promise<LoginState> {
       message: msg,
     };
   }
+
+  return { success: true, message: "Login successful" };
 }

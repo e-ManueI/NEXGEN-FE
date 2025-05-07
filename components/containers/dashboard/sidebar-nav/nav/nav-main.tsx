@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  IconCirclePlusFilled,
-  IconNotification,
-  type Icon,
-} from "@tabler/icons-react";
+import { IconCirclePlusFilled, IconNotification } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,16 +14,9 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AppRoutes } from "@/lib/routes";
+import { NavItem } from "../app-sidebar";
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string;
-    url: string;
-    icon?: Icon;
-  }[];
-}) {
+export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
 
   return (

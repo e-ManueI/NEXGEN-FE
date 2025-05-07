@@ -3,9 +3,9 @@
 import {
   Submission,
   SubmissionTable,
-} from "@/components/dashboard/submissions-table/submission-table";
-import AdditionalUserInfoCard from "@/components/dashboard/users/additional-user-info-card";
-import { UserDetailCard } from "@/components/dashboard/users/user-detail-card";
+} from "@/components/containers/dashboard/submissions-table/submission-table";
+import AdditionalUserInfoCard from "@/components/containers/dashboard/users/additional-user-info-card";
+import { UserDetailCard } from "@/components/containers/dashboard/users/user-detail-card";
 import { Button } from "@/components/ui/button";
 import { AppRoutes } from "@/lib/routes";
 import { ArrowLeft } from "lucide-react";

@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Mnda } from "./one-mnda";
 import { CompanyInfo } from "./two-company-info";
-import { Stepper } from "@/components/shared/stepper/stepper";
+import { Stepper } from "@/components/containers/web/stepper/stepper";
 import BrineLocationData from "./three_brine-uploader";
 
 export default function RegisterStepperForm() {

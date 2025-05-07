@@ -1,4 +1,4 @@
-import FeaturesSection from "@/components/web/features-section";
+import FeaturesSection from "@/components/containers/web/features-section";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 

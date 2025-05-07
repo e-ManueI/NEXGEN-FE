@@ -1,8 +1,8 @@
-import { LoginForm } from "@/components/web/login-form";
+import { LoginForm } from "@/components/containers/web/login-form";
 
 // components
-import LogoLink from "@/components/shared/logo-link/logo-link";
-import BackgroundLayout from "@/components/web/background-layout";
+import BackgroundLayout from "@/components/containers/web/background-layout";
+import LogoLink from "@/components/containers/web/logo-link/logo-link";
 
 export default function LoginPage() {
   return (

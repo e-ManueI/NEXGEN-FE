@@ -1,6 +1,6 @@
-import LogoLink from "@/components/shared/logo-link/logo-link";
-import BackgroundLayout from "@/components/web/background-layout";
-import { SignupForm } from "@/components/web/signup/signup-form";
+import BackgroundLayout from "@/components/containers/web/background-layout";
+import LogoLink from "@/components/containers/web/logo-link/logo-link";
+import { SignupForm } from "@/components/containers/web/signup/signup-form";
 
 export default function SignupPage() {
   return (

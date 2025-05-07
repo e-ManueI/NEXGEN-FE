@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import {
+  Icon,
   IconDashboard,
   IconDatabase,
   IconInnerShadowTop,
@@ -25,8 +26,26 @@ import NavUserWrapper from "./nav/nav-user/nav-user-wrapper";
 import { AppRoutes } from "@/lib/routes";
 import { useSession } from "next-auth/react";
 import { NavMain } from "./nav/nav-main";
+import { UserRole } from "@/app/_types/user-roles";
 
-const data = {
+export interface NavItem {
+  title: string;
+  url: string;
+  icon: Icon;
+  allowedRoles?: UserRole[]; // optional array of your allowed roles
+}
+
+export interface NavData {
+  navMain: NavItem[];
+  navSecondary: NavItem[];
+  models: {
+    name: string;
+    url: string;
+    icon: Icon;
+  }[];
+}
+
+const data: NavData = {
   navMain: [
     {
       title: "Dashboard",
@@ -85,7 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // otherwise only show if the user has at least one of the allowed roles
     return Array.isArray(session?.user.role)
       ? session.user.role.some((r) => item.allowedRoles!.includes(r))
-      : item.allowedRoles!.includes(session?.user.role ?? "");
+      : item.allowedRoles!.includes(session?.user.role as UserRole);
   });
 
   return (

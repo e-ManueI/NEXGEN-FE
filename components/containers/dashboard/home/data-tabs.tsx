@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Prediction,
   PredictionTable,
-} from "@/components/dashboard/predictions-table/prediction-table";
+} from "@/components/containers/dashboard/predictions-table/prediction-table";
 import { Badge } from "@/components/ui/badge";
 import {
   Submission,

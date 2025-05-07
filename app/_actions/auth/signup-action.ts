@@ -34,35 +34,74 @@ export async function signupAction(
   });
 
   // 2. Check if email already exists
-  const existingUser = await db
-    .select()
-    .from(user)
-    .where(eq(user.email, email))
-    .limit(1);
+  try {
+    const existingUser = await db
+      .select()
+      .from(user)
+      .where(eq(user.email, email))
+      .limit(1);
 
-  if (existingUser.length > 0) {
-    return { success: false, errors: { email: ["Email already exists"] } };
+    if (existingUser.length > 0) {
+      return { success: false, errors: { email: ["Email already exists"] } };
+    }
+  } catch (dbErr) {
+    console.error("DB error checking user:", dbErr);
+    return {
+      success: false,
+      message:
+        "Unable to verify email uniqueness right now. Please try again later.",
+    };
   }
 
   // 3. Hash the password + make iDs
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const userId = uuidv4();
-  const companyId = uuidv4();
-
-  // 4. Create the user
+  let hashedPassword: string;
   try {
-    await db.transaction(async (tx) => {
+    hashedPassword = await bcrypt.hash(password, 10);
+  } catch (hashErr) {
+    console.error("Error hashing password:", hashErr);
+    return {
+      success: false,
+      message: "Internal error encrypting your password. Please try again.",
+    };
+  }
+
+  // 4. Upsert company; find existing by name, else create new
+  let companyId: string;
+  try {
+    const [existingCompany] = await db
+      .select()
+      .from(companyProfile)
+      .where(eq(companyProfile.companyName, companyName))
+      .limit(1);
+
+    if (existingCompany) {
+      companyId = existingCompany.id;
+    } else {
+      companyId = uuidv4();
       // 4a. Insert company profile (minimal fields for now)
-      await tx.insert(companyProfile).values({
+      await db.insert(companyProfile).values({
         id: companyId,
-        companyName: companyName,
+        companyName,
         // everything else (companyHq, registrationStatusId, licenseNumber,
         // estimatedAnnualRevenueId) will default to NULL until collected
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+    }
+  } catch (companyErr) {
+    console.error("Error handling company record:", companyErr);
+    return {
+      success: false,
+      message:
+        "Could not create or find company record. Please try again later.",
+    };
+  }
 
-      // 4b. Insert user
+  // 5. Create the user inside a transaction
+  const userId = uuidv4();
+  try {
+    await db.transaction(async (tx) => {
+      // 5a. Insert user
       await tx.insert(user).values({
         id: userId,
         email: email,
@@ -80,17 +119,27 @@ export async function signupAction(
         updatedAt: new Date(),
       });
     });
-
-    // 5. Sign in the user
-    await signIn("credentials", { email, password, redirect: false });
-
-    return { success: true, message: "Signup successful!" };
-  } catch (error) {
-    console.error("[signup[]][error]", error);
-
+  } catch (createErr) {
+    console.error("Error creating user:", createErr);
     return {
       success: false,
-      message: "Something went wrong. Please try again.",
+      message: "Failed to create your account. Please try again.",
     };
   }
+
+  // 6a. Automatically sign in the user
+  try {
+    await signIn("credentials", { email, password, redirect: false });
+  } catch (signInErr) {
+    console.error("Error signing in new user:", signInErr);
+    // Not fatal; signup succeeded but sign-in failed
+    return {
+      success: true,
+      message:
+        "Signup succeeded, but we couldn't sign you in automatically. Please log in manually.",
+    };
+  }
+
+  // 7. Only now do we return the “all good” result
+  return { success: true, message: "Signup successful!" };
 }

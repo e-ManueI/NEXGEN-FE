@@ -39,6 +39,9 @@ export function SignupForm({
       if (state.success) {
         toast.success(state.message);
 
+        // Redirect to dashboard
+        router.push(AppRoutes.dashboard);
+
         // Clear the form
         setFormData({
           firstName: "",
@@ -48,9 +51,6 @@ export function SignupForm({
           retypePassword: "",
           companyName: "",
         });
-
-        // Redirect to dashboard
-        router.push(AppRoutes.dashboard);
       } else {
         toast.error(state.message, {
           id: `signup-error-${Date.now()}`,
