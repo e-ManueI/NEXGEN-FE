@@ -1,5 +1,5 @@
 "use client";
-import LithiumDashboard from "@/components/dashboard/make-predictions/lithium-predictor-dashboard";
+import LithiumDashboard from "@/components/dashboard/lithium-predictor/lithium-predictor-dashboard";
 import React from "react";
 
 const MakePredictions = () => {

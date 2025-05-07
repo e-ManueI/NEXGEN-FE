@@ -10,7 +10,7 @@ import { DataTabs } from "@/components/dashboard/home/data-tabs";
 const cards: AnalyticsCardData[] = [
   {
     description: "Total Predictions",
-    value: "1.00",
+    value: 1,
   },
   {
     description: "Total Users",

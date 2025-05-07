@@ -109,7 +109,6 @@ export function DataTabs() {
           </TabsTrigger>
         </TabsList>
       </div>
-      {/* TODO: Deal with tables for each section */}
 
       <TabsContent value="outline" className="flex flex-col">
         <PredictionTable data={samplePredictionData} />
