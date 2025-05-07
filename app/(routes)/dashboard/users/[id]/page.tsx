@@ -3,7 +3,7 @@
 import {
   Submission,
   SubmissionTable,
-} from "@/components/dashboard/submissions/submission-table";
+} from "@/components/dashboard/submissions-table/submission-table";
 import AdditionalUserInfoCard from "@/components/dashboard/users/additional-user-info-card";
 import { UserDetailCard } from "@/components/dashboard/users/user-detail-card";
 import { Button } from "@/components/ui/button";

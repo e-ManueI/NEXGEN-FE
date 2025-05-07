@@ -5,8 +5,7 @@ import {
   AnalyticsCards,
 } from "@/components/ui/analytics-cards";
 
-import data from "./data.json";
-import { DataTabs } from "@/components/shared/data-table/data-tabs";
+import { DataTabs } from "@/components/dashboard/home/data-tabs";
 
 const cards: AnalyticsCardData[] = [
   {
@@ -35,7 +34,7 @@ export default function DashboardHome() {
           <div className="flex flex-col gap-4 md:gap-6">
             <AnalyticsCards data={cards} />
             <ChartAreaInteractive />
-            <DataTabs data={data} />
+            <DataTabs />
           </div>
         </div>
       </div>
