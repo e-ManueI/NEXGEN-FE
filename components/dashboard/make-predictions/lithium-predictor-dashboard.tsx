@@ -30,6 +30,28 @@ export default function LithiumDashboard() {
     Cl_Conc_ppm: 22000.0,
     SO4_Conc_ppm: 2800.0,
     Br_Conc_ppm: 0.0,
+    B_Conc_ppm: 35.0,
+    Fe_ppm: 2.0,
+    Mn_ppm: 1.5,
+    Sr_ppm: 8.0,
+    Ba_ppm: 0.7,
+    pH: 6.8,
+    Viscosity_cP: 1.3,
+    Conductivity_mS_cm: 155.0,
+    Density_kg_m3: 1120.0,
+    Temperature_C: 35.0,
+    TDS_mg_L: 105000.0,
+    Turbidity_NTU: 1.5,
+    Redox_mV: 250.0,
+    Dissolved_O2_mg_L: 6.5,
+    Specific_Gravity: 1.12,
+    Specific_Heat_J_gk: 4.18,
+    Voltage_V: 3.7,
+    Current_Density_mA_cm2: 80.0,
+    Residence_Time_min: 30.0,
+    Flow_Rate_L_hr: 500.0,
+    Reactor_Volume_L: 250.0,
+    Membrane_Type: 1,
   });
   const [hasResults, setHasResults] = useState(false);
 
@@ -65,17 +87,17 @@ export default function LithiumDashboard() {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
       {/* Input Panel */}
-      <Card className="col-span-full md:col-span-1 lg:col-span-1">
-        <CardHeader className="pb-3">
+      <Card className="col-span-full min-h-[calc(30dvh)] overflow-scroll md:col-span-1 lg:col-span-1">
+        <CardHeader className="">
           <CardTitle className="text-xl">Input Parameters</CardTitle>
           <CardDescription>
             Enter brine sample properties for analysis
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="flex-1 p-0">
+          <div className="px-4">
             {/* Input Mode Section */}
-            <div className="space-y-2">
+            <div className="space-y-4">
               <Label className="text-sm font-medium">
                 Choose Input Method:
               </Label>
@@ -95,9 +117,11 @@ export default function LithiumDashboard() {
                 </div>
               </RadioGroup>
             </div>
+          </div>
 
+          <div className="mt-4 h-[calc(55dvh)] min-h-[300px] overflow-y-auto px-4">
             {inputMode === "csv" ? (
-              <div className="pt-2">
+              <div className="">
                 <Label htmlFor="csv-upload" className="sr-only">
                   Upload CSV
                 </Label>
@@ -112,7 +136,7 @@ export default function LithiumDashboard() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4 pt-2">
+              <div className="space-y-4">
                 <h3 className="text-sm font-medium">Brine Sample Properties</h3>
                 <Separator />
 
@@ -171,7 +195,7 @@ export default function LithiumDashboard() {
             )}
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="">
           <Button className="w-full" onClick={generateResults}>
             <Zap className="mr-2 h-4 w-4" />
             Generate Predictions
@@ -180,7 +204,7 @@ export default function LithiumDashboard() {
       </Card>
 
       {/* Results Panel */}
-      <Card className="col-span-full md:col-span-2 lg:col-span-3">
+      <Card className="col-span-full flex flex-col md:col-span-2 lg:col-span-3">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Beaker className="h-5 w-5 text-green-500" />
