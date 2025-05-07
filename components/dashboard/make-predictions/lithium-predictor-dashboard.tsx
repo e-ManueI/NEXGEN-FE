@@ -17,6 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function LithiumDashboard() {
   // State for input values
@@ -51,9 +58,18 @@ export default function LithiumDashboard() {
     Residence_Time_min: 30.0,
     Flow_Rate_L_hr: 500.0,
     Reactor_Volume_L: 250.0,
-    Membrane_Type: 1,
   });
   const [hasResults, setHasResults] = useState(false);
+
+  // State for non-numeric inputs
+  const [processParams, setProcessParams] = useState({
+    membraneType: "ceramic",
+    extractionMethod: "adsorption",
+    pretreatmentLevel: "medium",
+    temperatureControl: true,
+    pressureLevel: 50, // for slider
+    phAdjustment: "neutral",
+  });
 
   // Function to update concentration values
   const updateConcentration = (
@@ -77,6 +93,17 @@ export default function LithiumDashboard() {
       : concentrations[key] - step;
 
     updateConcentration(key, newValue);
+  };
+
+  // Function to update process parameters
+  const updateProcessParam = (
+    key: keyof typeof processParams,
+    value: string | number | boolean,
+  ) => {
+    setProcessParams((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   // Function to generate results
@@ -136,60 +163,246 @@ export default function LithiumDashboard() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium">Brine Sample Properties</h3>
-                <Separator />
+              <div className="space-y-6 pt-2">
+                {/* Brine Sample Properties Section */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">
+                    Brine Sample Properties
+                  </h3>
+                  <Separator />
 
-                {/* Concentration Input Fields - Organized in a more compact way */}
-                <div className="grid grid-cols-1 gap-3">
-                  {Object.entries(concentrations).map(([key, value]) => (
-                    <div key={key} className="space-y-1">
-                      <Label htmlFor={key} className="text-xs font-medium">
-                        {key.replace(/_/g, " ")}
-                      </Label>
-                      <div className="flex">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-r-none"
-                          onClick={() =>
-                            adjustValue(
-                              key as keyof typeof concentrations,
-                              false,
-                            )
-                          }
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <Input
-                          id={key}
-                          type="number"
-                          value={value}
-                          onChange={(e) =>
-                            updateConcentration(
-                              key as keyof typeof concentrations,
-                              Number.parseFloat(e.target.value) || 0,
-                            )
-                          }
-                          className="z-30 h-8 rounded-none text-center"
-                          step={0.1}
-                        />
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8 rounded-l-none"
-                          onClick={() =>
-                            adjustValue(
-                              key as keyof typeof concentrations,
-                              true,
-                            )
-                          }
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
+                  {/* Concentration Input Fields - Organized in a more compact way */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {Object.entries(concentrations).map(([key, value]) => (
+                      <div key={key} className="space-y-1">
+                        <Label htmlFor={key} className="text-xs font-medium">
+                          {key.replace(/_/g, " ")}
+                        </Label>
+                        <div className="flex">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 rounded-r-none"
+                            onClick={() =>
+                              adjustValue(
+                                key as keyof typeof concentrations,
+                                false,
+                              )
+                            }
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <Input
+                            id={key}
+                            type="number"
+                            value={value}
+                            onChange={(e) =>
+                              updateConcentration(
+                                key as keyof typeof concentrations,
+                                Number.parseFloat(e.target.value) || 0,
+                              )
+                            }
+                            className="z-30 h-8 rounded-none text-center"
+                            step={0.1}
+                          />
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 rounded-l-none"
+                            onClick={() =>
+                              adjustValue(
+                                key as keyof typeof concentrations,
+                                true,
+                              )
+                            }
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Process Parameters Section - Non-numeric inputs */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Process Parameters</h3>
+                  <Separator />
+
+                  {/* Membrane Type Dropdown */}
+                  <div className="space-y-1">
+                    <Label
+                      htmlFor="membrane-type"
+                      className="text-xs font-medium"
+                    >
+                      Membrane Type
+                    </Label>
+                    <Select
+                      value={processParams.membraneType}
+                      onValueChange={(value) =>
+                        updateProcessParam("membraneType", value)
+                      }
+                    >
+                      <SelectTrigger id="membrane-type" className="h-8 w-full">
+                        <SelectValue placeholder="Select membrane type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ceramic">Ceramic</SelectItem>
+                        <SelectItem value="polymer">Polymer</SelectItem>
+                        <SelectItem value="composite">Composite</SelectItem>
+                        <SelectItem value="nanofiltration">
+                          Nanofiltration
+                        </SelectItem>
+                        <SelectItem value="reverse-osmosis">
+                          Reverse Osmosis
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* TODO: Extraction Method Dropdown */}
+                  {/* <div className="space-y-1">
+                    <Label
+                      htmlFor="extraction-method"
+                      className="text-xs font-medium"
+                    >
+                      Extraction Method
+                    </Label>
+                    <Select
+                      value={processParams.extractionMethod}
+                      onValueChange={(value) =>
+                        updateProcessParam("extractionMethod", value)
+                      }
+                    >
+                      <SelectTrigger
+                        id="extraction-method"
+                        className="h-8 w-full"
+                      >
+                        <SelectValue placeholder="Select extraction method" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="adsorption">Adsorption</SelectItem>
+                        <SelectItem value="ion-exchange">
+                          Ion Exchange
+                        </SelectItem>
+                        <SelectItem value="solvent-extraction">
+                          Solvent Extraction
+                        </SelectItem>
+                        <SelectItem value="precipitation">
+                          Precipitation
+                        </SelectItem>
+                        <SelectItem value="electrochemical">
+                          Electrochemical
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div> */}
+
+                  {/* TODO: Pretreatment Level Dropdown */}
+                  {/* <div className="space-y-1">
+                    <Label
+                      htmlFor="pretreatment-level"
+                      className="text-xs font-medium"
+                    >
+                      Pretreatment Level
+                    </Label>
+                    <Select
+                      value={processParams.pretreatmentLevel}
+                      onValueChange={(value) =>
+                        updateProcessParam("pretreatmentLevel", value)
+                      }
+                    >
+                      <SelectTrigger
+                        id="pretreatment-level"
+                        className="h-8 w-full"
+                      >
+                        <SelectValue placeholder="Select pretreatment level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="minimal">Minimal</SelectItem>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="intensive">Intensive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div> */}
+
+                  {/* TODO: pH Adjustment Dropdown */}
+                  {/* <div className="space-y-1">
+                    <Label
+                      htmlFor="ph-adjustment"
+                      className="text-xs font-medium"
+                    >
+                      pH Adjustment
+                    </Label>
+                    <Select
+                      value={processParams.phAdjustment}
+                      onValueChange={(value) =>
+                        updateProcessParam("phAdjustment", value)
+                      }
+                    >
+                      <SelectTrigger id="ph-adjustment" className="h-8 w-full">
+                        <SelectValue placeholder="Select pH adjustment" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="highly-acidic">
+                          Highly Acidic (pH 1-3)
+                        </SelectItem>
+                        <SelectItem value="acidic">Acidic (pH 4-6)</SelectItem>
+                        <SelectItem value="neutral">Neutral (pH 7)</SelectItem>
+                        <SelectItem value="alkaline">
+                          Alkaline (pH 8-10)
+                        </SelectItem>
+                        <SelectItem value="highly-alkaline">
+                          Highly Alkaline (pH 11-14)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div> */}
+
+                  {/* TODO: Pressure Level Slider */}
+                  {/* <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label
+                        htmlFor="pressure-level"
+                        className="text-xs font-medium"
+                      >
+                        Pressure Level (bar)
+                      </Label>
+                      <span className="text-xs font-medium">
+                        {processParams.pressureLevel}
+                      </span>
                     </div>
-                  ))}
+                    <Slider
+                      id="pressure-level"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={[processParams.pressureLevel]}
+                      onValueChange={(value) =>
+                        updateProcessParam("pressureLevel", value[0])
+                      }
+                      className="w-full"
+                    />
+                  </div> */}
+
+                  {/* TODO: Temperature Control Switch */}
+                  {/* <div className="flex items-center justify-between space-y-0 pt-1">
+                    <Label
+                      htmlFor="temperature-control"
+                      className="text-xs font-medium"
+                    >
+                      Temperature Control
+                    </Label>
+                    <Switch
+                      id="temperature-control"
+                      checked={processParams.temperatureControl}
+                      onCheckedChange={(checked) =>
+                        updateProcessParam("temperatureControl", checked)
+                      }
+                    />
+                  </div> */}
                 </div>
               </div>
             )}
@@ -211,7 +424,7 @@ export default function LithiumDashboard() {
             Lithium Extraction Feasibility Results
           </CardTitle>
           <CardDescription>
-            Analysis and predictions based on your brine sample properties
+            Analysis and predictions based on your input parameters
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -222,23 +435,31 @@ export default function LithiumDashboard() {
                 No Results Generated Yet
               </h3>
               <p className="text-muted-foreground max-w-md text-sm">
-                Enter your brine sample properties on the left and click
-                &quot;Generate Predictions&quot; to see extraction feasibility
-                analysis.
+                Enter your parameters on the left and click &quot;Generate
+                Predictions&quot; to see extraction feasibility analysis.
               </p>
             </div>
           ) : (
             <Tabs defaultValue="summary">
               <TabsList className="mb-4">
-                <TabsTrigger value="summary">Summary</TabsTrigger>
-                <TabsTrigger value="details">Detailed Analysis</TabsTrigger>
-                <TabsTrigger value="charts">Charts</TabsTrigger>
-                <TabsTrigger value="recommendations">
-                  Recommendations
+                <TabsTrigger value="chlr-summary">
+                  Chlor-alkali Summary
+                </TabsTrigger>
+                <TabsTrigger value="chlr-depth">
+                  Chlor-alkali In-Depth
+                </TabsTrigger>
+                <TabsTrigger value="chlr-comparison">
+                  Chlor-alkali Comparison
+                </TabsTrigger>
+                <TabsTrigger value="electro-summary">
+                  Electrodialysis Summary
+                </TabsTrigger>
+                <TabsTrigger value="electro-depth">
+                  Electrodialysis In-Depth
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="summary" className="space-y-4">
+              <TabsContent value="chlr-summary" className="space-y-4">
                 <Alert className="border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20">
                   <Beaker className="h-4 w-4 text-green-500" />
                   <AlertTitle>Extraction Feasible</AlertTitle>
@@ -304,7 +525,7 @@ export default function LithiumDashboard() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="details">
+              <TabsContent value="chlr-depth">
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Detailed Analysis</h3>
                   <p>
@@ -312,26 +533,55 @@ export default function LithiumDashboard() {
                     including process parameters, chemical reactions, and
                     efficiency calculations.
                   </p>
+
+                  <div className="mt-4 space-y-2">
+                    <h4 className="text-sm font-medium">
+                      Selected Process Parameters:
+                    </h4>
+                    <ul className="space-y-1 text-sm">
+                      <li>
+                        <span className="font-medium">Membrane Type:</span>{" "}
+                        {processParams.membraneType}
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </TabsContent>
 
-              <TabsContent value="charts">
+              <TabsContent value="chlr-comparison">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Visualization</h3>
+                  <h3 className="text-lg font-medium">
+                    Chlor-alkali Comparison
+                  </h3>
                   <div className="bg-muted flex aspect-[16/9] items-center justify-center rounded-md">
                     <p className="text-muted-foreground">
-                      Charts and graphs would be displayed here
+                      Content will be displayed here
                     </p>
                   </div>
                 </div>
               </TabsContent>
 
-              <TabsContent value="recommendations">
+              <TabsContent value="electro-summary">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Recommendations</h3>
+                  <h3 className="text-lg font-medium">
+                    Electrodialysis Summary
+                  </h3>
                   <p>
-                    Process optimization recommendations would be displayed here
-                    based on the input parameters.
+                    Velit nostrud id aliquip officia qui exercitation pariatur
+                    non veniam quis occaecat amet.
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="electro-depth">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">
+                    Electrodialysis In-Depth
+                  </h3>
+                  <p>
+                    Est dolore est anim incididunt veniam non cupidatat sunt.
+                    Nostrud et Lorem exercitation exercitation fugiat enim
+                    aliqua.
                   </p>
                 </div>
               </TabsContent>
