@@ -15,7 +15,11 @@ export const metadata: Metadata = {
 };
 
 // Markdown content (replace with your full document content)
-const markdownFilePath = path.join(process.cwd(), "", "brine-analysis.md");
+const markdownFilePath = path.join(
+  process.cwd(),
+  "",
+  "/public/md/brine-analysis.md",
+);
 const markdownContent = fs.readFileSync(markdownFilePath, "utf-8");
 
 const Page: React.FC = () => {

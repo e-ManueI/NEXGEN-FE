@@ -1,8 +1,9 @@
+"use client";
 import FeaturesSection from "@/components/containers/web/features-section";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default async function Home() {
+export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
       <FeaturesSection />

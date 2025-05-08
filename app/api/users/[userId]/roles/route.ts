@@ -1,14 +1,11 @@
-import { NextRequest } from "next/server";
+import { NextRequest, URLPattern } from "next/server";
 import { eq } from "drizzle-orm";
 import { failure, notFound, success, unauthorized } from "@/lib/api-response";
 import { user } from "@/app/_db/schema";
 import { db } from "@/app/_db";
 import { auth } from "@/lib/auth";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { userId: string } },
-) {
+export async function GET(req: NextRequest) {
   // 1) Check authentication:
   const session = await auth();
   if (!session) {
@@ -16,12 +13,19 @@ export async function GET(
     return unauthorized("Unauthenticated", 401);
   }
 
-  // 2) (Optional) enforce that the logged-in user can only fetch their own role
-  if (session.user.id !== params.userId) {
+  // 2) Use URL pattern matching to extract userId
+  const urlPattern = new URLPattern({ pathname: "/api/users/:userId/roles" });
+  const match = urlPattern.exec(req.url);
+  const userId = match?.pathname.groups.userId;
+
+  if (!userId) {
+    return failure("User ID is missing", 400);
+  }
+  // 3) (Optional) enforce that the logged-in user can only fetch their own role
+  if (session.user.id !== userId) {
     return unauthorized("Forbidden", 403);
   }
 
-  const { userId } = params;
   try {
     // 3) Now safe to query
     const result = await db
