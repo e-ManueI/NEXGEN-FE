@@ -1,0 +1,2 @@
+CREATE TYPE "public"."prediction_status_enum" AS ENUM('in_progress', 'done');--> statement-breakpoint
+ALTER TABLE "prediction_result" ADD COLUMN "prediction_status" "prediction_status_enum" DEFAULT 'in_progress' NOT NULL;

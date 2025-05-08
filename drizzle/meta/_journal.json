@@ -71,6 +71,20 @@
       "when": 1746618376496,
       "tag": "0009_exotic_shiver_man",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1746701648104,
+      "tag": "0010_cool_goliath",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1746705420325,
+      "tag": "0011_illegal_kinsey_walden",
+      "breakpoints": true
     }
   ]
 }

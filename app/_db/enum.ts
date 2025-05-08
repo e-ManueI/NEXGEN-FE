@@ -11,3 +11,8 @@ export const registrationEnum = pgEnum("registration_status_enum", [
   "approved",
   "rejected",
 ]);
+
+export const predictionStatusEnum = pgEnum("prediction_status_enum", [
+  "in_progress",
+  "done",
+]);

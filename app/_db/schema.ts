@@ -11,7 +11,7 @@ import {
   date,
   text,
 } from "drizzle-orm/pg-core";
-import { userTypeEnum } from "./enum";
+import { userTypeEnum, predictionStatusEnum } from "./enum";
 
 // === Tables ===
 // This file defines the database schema for a PostgreSQL database using Drizzle ORM.
@@ -163,13 +163,14 @@ export const predictionResult = pgTable("prediction_result", {
     .notNull()
     .references(() => companyProfile.id, { onDelete: "cascade" }),
   modelVersion: varchar("model_version", { length: 250 }).notNull(),
-  chloralkaliInDepthPath: varchar("chloralkali_in_depth_path").notNull(),
-  chloralkaliSummaryPath: varchar("chloralkali_summary_path").notNull(),
-  chloralkaliComparisonPath: varchar("chloralkali_comparison_path").notNull(),
-  electrodialysisInDepthPath: varchar(
-    "electrodialysis_in_depth_path",
-  ).notNull(),
-  electrodialysisSummaryPath: varchar("electrodialysis_summary_path").notNull(),
+  predictionStatus: predictionStatusEnum("prediction_status")
+    .notNull()
+    .default("in_progress"),
+  chloralkaliInDepthPath: varchar("chloralkali_in_depth_path"),
+  chloralkaliSummaryPath: varchar("chloralkali_summary_path"),
+  chloralkaliComparisonPath: varchar("chloralkali_comparison_path"),
+  electrodialysisInDepthPath: varchar("electrodialysis_in_depth_path"),
+  electrodialysisSummaryPath: varchar("electrodialysis_summary_path"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

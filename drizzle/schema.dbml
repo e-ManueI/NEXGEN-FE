@@ -1,3 +1,8 @@
+enum prediction_status_enum {
+  in_progress
+  done
+}
+
 enum registration_status_enum {
   pending
   approved
@@ -72,11 +77,12 @@ table prediction_result {
   brine_sample_id uuid [not null]
   company_id uuid [not null]
   model_version varchar(250) [not null]
-  chloralkali_in_depth_path varchar [not null]
-  chloralkali_summary_path varchar [not null]
-  chloralkali_comparison_path varchar [not null]
-  electrodialysis_in_depth_path varchar [not null]
-  electrodialysis_summary_path varchar [not null]
+  prediction_status prediction_status_enum [not null, default: 'in_progress']
+  chloralkali_in_depth_path varchar
+  chloralkali_summary_path varchar
+  chloralkali_comparison_path varchar
+  electrodialysis_in_depth_path varchar
+  electrodialysis_summary_path varchar
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
 }
