@@ -71,7 +71,7 @@ export async function signupAction(
     const [existingCompany] = await db
       .select()
       .from(companyProfile)
-      .where(eq(companyProfile.companyName, companyName))
+      .where(eq(companyProfile.companyName, companyName.trim().toLowerCase()))
       .limit(1);
 
     if (existingCompany) {

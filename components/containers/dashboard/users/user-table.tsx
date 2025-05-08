@@ -26,24 +26,16 @@ import { AddUserDialog } from "./add-user-dialog";
 import Link from "next/link";
 import { AppRoutes } from "@/lib/routes";
 import { EditUserDialog } from "./edit-user-dialog";
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  companyName: string;
-  role: string;
-  isActive: string;
-};
+import { UserInfo } from "@/app/_types/user-info";
 
 interface UserTableProps {
-  data: User[];
+  data: UserInfo[];
 }
 
 export default function UserTable({ data }: UserTableProps) {
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editingUser, setEditingUser] = useState<UserInfo | null>(null);
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<UserInfo>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => (
@@ -71,7 +63,7 @@ export default function UserTable({ data }: UserTableProps) {
       ),
     },
     {
-      accessorKey: "companyName", // match your User type
+      accessorKey: "companyName", // match your UserInfo type
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Company" />
       ),
