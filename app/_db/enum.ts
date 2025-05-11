@@ -1,5 +1,5 @@
 import { pgEnum } from "drizzle-orm/pg-core";
-
+/// TODO: MODIFY TO USE THE USER TYPE ENUM FOR DRIZZLE V0.43+
 export const userTypeEnum = pgEnum("user_type_enum", [
   "admin",
   "expert",
@@ -16,3 +16,10 @@ export const predictionStatusEnum = pgEnum("prediction_status_enum", [
   "in_progress",
   "done",
 ]);
+
+// Enum for user types that should be in sync with [userTypeEnum] above
+export enum UserType {
+  ADMIN = "admin",
+  EXPERT = "expert",
+  CLIENT = "client",
+}

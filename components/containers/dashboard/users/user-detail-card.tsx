@@ -7,33 +7,31 @@ import { Badge } from "@/components/ui/badge";
 import { EditUserDialog } from "./edit-user-dialog";
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
-import { User } from "./user-table";
+import { UserInfo } from "@/app/_types/user-info";
 
-export interface UserDetailCardProps {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
+interface Props extends UserInfo {
+  onEdit: (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }) => void;
+  isEditing: boolean;
 }
 
-export const UserDetailCard: React.FC<UserDetailCardProps> = ({
+export const UserDetailCard: React.FC<Props> = ({
   id,
-  firstName,
-  lastName,
+  name,
   email,
   role,
+  onEdit,
+  isEditing,
 }) => {
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  // 2) Build the full User shape for the dialog
-  const user: User = {
-    id,
-    name: `${firstName} ${lastName}`,
-    email,
-    companyName: "", // fill in or extend props if you have it
-    role,
-    isActive: "active", // ditto
-  };
+  const [open, setOpen] = useState(false);
+
+  // split name
+  // const [firstName, lastName] = name.split(" ");
+
   return (
     <Card className="md:col-span-1">
       <CardContent className="pt-6">
@@ -41,29 +39,31 @@ export const UserDetailCard: React.FC<UserDetailCardProps> = ({
           <Avatar className="mb-4 h-24 w-24">
             <AvatarImage
               src="/placeholder.svg?height=96&width=96"
-              alt={`${firstName} ${lastName}`}
+              alt={`${name}`}
             />
-            <AvatarFallback>
-              {firstName[0]}
-              {lastName[0]}
-            </AvatarFallback>
+            <AvatarFallback>{name}</AvatarFallback>
           </Avatar>
-          <h2 className="text-xl font-bold">{`${firstName} ${lastName}`}</h2>
+          <h2 className="text-xl font-bold">{`${name}`}</h2>
           <p className="text-muted-foreground text-sm">{email}</p>
           <Badge className="mb-4">{role}</Badge>
 
           <EditUserDialog
-            open={editingUser !== null}
-            onOpenChange={(open) => {
-              setEditingUser(open ? user : null);
+            open={open}
+            user={{ id, name, email, role, companyName: "", isActive: true }}
+            isEditing={isEditing}
+            onOpenChange={setOpen}
+            onSubmit={(data) => {
+              onEdit(data);
+              setOpen(false);
             }}
           >
             <Button
               variant="outline"
               className="mt-4 flex w-full items-center justify-center gap-2"
+              disabled={isEditing}
             >
               <Edit2 className="h-4 w-4" />
-              <span>Edit Profile</span>
+              <span> {isEditing ? "Saving…" : "Edit Profile"}</span>
             </Button>
           </EditUserDialog>
         </div>

@@ -1,9 +1,8 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Eye, EyeOff, PlusCircle } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,44 +16,64 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
+import { createUserAction } from "@/app/_actions/auth/create-user-action";
+import { useRouter } from "next/navigation";
 
 export function AddUserDialog() {
   const [open, setOpen] = useState(false);
-  const [password, setPassword] = useState("");
-  const [passwordMatch, setPasswordMatch] = useState(true);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [genericError, setGenericError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showRetypePassword, setShowRetypePassword] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // React 18 Transition for non-blocking state
+  const [isPending, startTransition] = useTransition();
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Add your form submission logic here
-    setOpen(false);
-  };
 
-  const checkPasswordMatch = (retypePassword: string) => {
-    setPasswordMatch(password === retypePassword);
-  };
+    const form = e.currentTarget;
+
+    setFieldErrors({});
+    setGenericError(null);
+
+    const formData = new FormData(e.currentTarget);
+
+    startTransition(async () => {
+      const result = await createUserAction(formData);
+
+      console.log("result", result);
+
+      if (result.success) {
+        // Server action returned { success: true, user: {..}  }
+        toast.success("User created", {
+          description: result.user.name,
+        });
+        setOpen(false);
+        form.reset();
+        router.refresh();
+      } else {
+        console.error("Create user error:", result);
+        // Handle validation errors
+        if (result.errors) setFieldErrors(result.errors);
+        // Handle top-level message (conflict, unauthorized, server failure)
+        else if (result.message) setGenericError(result.message);
+        else setGenericError("Failed to create user.");
+      }
+    });
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="sm"
-          variant="outline"
-          aria-label="Add User"
-          className="border-dashed"
-        >
+        <Button size="sm" variant="outline" className="border-dashed">
           <PlusCircle className="mr-2 h-4 w-4" />
           Add User
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
@@ -63,102 +82,135 @@ export function AddUserDialog() {
               Create a new user account by filling out the form below.
             </DialogDescription>
           </DialogHeader>
+
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fname">First Name</Label>
-                <Input id="fname" name="fname" required />
+                <Label htmlFor="firstName">First Name</Label>
+                <Input name="firstName" id="firstName" />
+                {fieldErrors.firstName && (
+                  <p className="text-sm text-red-500">
+                    {fieldErrors.firstName.join(" ")}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lname">Last Name</Label>
-                <Input id="lname" name="lname" required />
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input name="lastName" id="lastName" required />
+                {fieldErrors.lastName && (
+                  <p className="text-sm text-red-500">
+                    {fieldErrors.lastName.join(" ")}
+                  </p>
+                )}
               </div>
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="company">Company Name</Label>
-              <Input id="company" name="company" required />
+              <Label htmlFor="companyName">Company Name</Label>
+              <Input name="companyName" id="companyName" required />
+              {fieldErrors.companyName && (
+                <p className="text-sm text-red-500">
+                  {fieldErrors.companyName.join(" ")}
+                </p>
+              )}
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" name="email" type="email" required />
+              <Input name="email" id="email" type="email" required />
+              {fieldErrors.email && (
+                <p className="text-sm text-red-500">
+                  {fieldErrors.email.join(" ")}
+                </p>
+              )}
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
-                  id="password"
                   name="password"
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   className="absolute top-0 right-0 h-full px-3 py-2"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword((v) => !v)}
                 >
-                  {showPassword ? (
-                    <EyeOff className="text-muted-foreground h-4 w-4" />
-                  ) : (
-                    <Eye className="text-muted-foreground h-4 w-4" />
-                  )}
+                  {showPassword ? <EyeOff /> : <Eye />}
                   <span className="sr-only">
                     {showPassword ? "Hide password" : "Show password"}
                   </span>
                 </Button>
               </div>
+              {fieldErrors.password && (
+                <p className="text-sm text-red-500">
+                  {fieldErrors.password.join(" ")}
+                </p>
+              )}
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="retypePassword">Retype Password</Label>
+              <Label htmlFor="confirmPassword">Retype Password</Label>
               <div className="relative">
                 <Input
-                  id="retypePassword"
-                  name="retypePassword"
+                  name="confirmPassword"
+                  id="confirmPassword"
                   type={showRetypePassword ? "text" : "password"}
                   required
-                  onChange={(e) => checkPasswordMatch(e.target.value)}
-                  className={!passwordMatch ? "border-red-500" : ""}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   className="absolute top-0 right-0 h-full px-3 py-2"
-                  onClick={() => setShowRetypePassword(!showRetypePassword)}
+                  onClick={() => setShowRetypePassword((v) => !v)}
                 >
-                  {showRetypePassword ? (
-                    <EyeOff className="text-muted-foreground h-4 w-4" />
-                  ) : (
-                    <Eye className="text-muted-foreground h-4 w-4" />
-                  )}
+                  {showRetypePassword ? <EyeOff /> : <Eye />}
                   <span className="sr-only">
                     {showRetypePassword ? "Hide password" : "Show password"}
                   </span>
                 </Button>
               </div>
-              {!passwordMatch && (
-                <p className="text-xs text-red-500">Passwords do not match</p>
+              {fieldErrors.confirmPassword && (
+                <p className="text-sm text-red-500">
+                  {fieldErrors.confirmPassword.join(" ")}
+                </p>
               )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
-              <Select name="role" required>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="user">User</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
-                </SelectContent>
-              </Select>
+              <select
+                id="role"
+                name="role"
+                defaultValue="" // start blank
+                required
+                className="focus:border-secondary focus:ring-secondary block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:ring-1 focus:outline-none"
+              >
+                <option value="" disabled>
+                  Select a role
+                </option>
+                <option value="admin">Admin</option>
+                <option value="client">Client</option>
+                <option value="expert">Expert</option>
+              </select>
+              {fieldErrors.role && (
+                <p className="text-sm text-red-500">
+                  {fieldErrors.role.join(" ")}
+                </p>
+              )}
             </div>
           </div>
+
+          {genericError && <p className="mb-4 text-red-500">{genericError}</p>}
+
           <DialogFooter>
-            <Button type="submit" disabled={!passwordMatch}>
-              Submit
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Creating…" : "Submit"}
             </Button>
           </DialogFooter>
         </form>

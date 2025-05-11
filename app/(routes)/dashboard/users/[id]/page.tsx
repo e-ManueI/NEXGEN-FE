@@ -1,64 +1,54 @@
 "use client";
 
-import {
-  Submission,
-  SubmissionTable,
-} from "@/components/containers/dashboard/submissions-table/submission-table";
 import AdditionalUserInfoCard from "@/components/containers/dashboard/users/additional-user-info-card";
 import { UserDetailCard } from "@/components/containers/dashboard/users/user-detail-card";
 import { Button } from "@/components/ui/button";
+import WebLoader from "@/components/ui/web-loader";
+import { useEditUser, useUserDetail } from "@/app/hooks/useUsers";
 import { AppRoutes } from "@/lib/routes";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React from "react";
+import { usePredictions } from "@/app/hooks/usePredictions";
+import { PredictionTable } from "@/components/containers/dashboard/predictions-table/prediction-table";
+import { toast } from "sonner";
 
 const UserDetailsHome = () => {
   const params = useParams();
   const userId = params.id as string;
+  const {
+    user,
+    loading: uLoading,
+    error: uError,
+    refresh: refreshUser,
+  } = useUserDetail(userId);
+  const {
+    predictions,
+    loading: pLoading,
+    error: pError,
+  } = usePredictions(userId);
+  const { editUser, isEditing, editError } = useEditUser();
 
-  const sampleData: Submission[] = [
-    {
-      predictionId: "1",
-      companyName: "Acme Corp",
-      sampleCount: 10,
-      status: "Approved",
-      modelVersion: "v1.0",
-      approvedBy: "John Doe",
-      approvedAt: "2023-03-15T10:00:00Z",
-    },
-    {
-      predictionId: "2",
-      companyName: "Acme Corp",
-      sampleCount: 10,
-      status: "Approved",
-      modelVersion: "v1.0",
-      approvedBy: "John Doe",
-      approvedAt: "2023-03-15T10:00:00Z",
-    },
-  ];
-
-  const detailUser = {
-    id: userId,
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah.j@brinemasters.com",
-    company: "BrineMasters Inc.",
-    role: "client",
-    status: "active" as "active" | "deactivated",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St, San Francisco, CA 94105",
-    joinDate: "March 15, 2023",
+  const handleEdit = async (data: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }) => {
+    if (!user) return;
+    try {
+      await editUser({ id: user.id, ...data });
+      toast.success("Profile updated");
+      refreshUser();
+    } catch (err) {
+      console.error(err);
+      toast.error(editError ?? "Failed to update profile");
+    }
   };
 
-  const infoUser = {
-    id: "u-123",
-    joinDate: "2024-09-12",
-    companyName: "Oceanic Industries",
-    status: "active" as const,
-    lastLogin: "2025-05-05 16:45",
-    lastUpdated: "2025-05-06 08:30",
-  };
+  if (uLoading || pLoading) return <WebLoader />;
+  if (uError || pError) return <div>{uError?.message ?? pError?.message}</div>;
 
   return (
     <div className="flex flex-col space-y-6">
@@ -72,11 +62,13 @@ const UserDetailsHome = () => {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <UserDetailCard {...detailUser} />
-        <AdditionalUserInfoCard {...infoUser} />
+        {user && (
+          <UserDetailCard {...user} onEdit={handleEdit} isEditing={isEditing} />
+        )}
+        {user && <AdditionalUserInfoCard {...user} />}
       </div>
 
-      <SubmissionTable data={sampleData} />
+      <PredictionTable data={predictions} />
     </div>
   );
 };
