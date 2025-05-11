@@ -16,7 +16,7 @@ import { eq, and } from "drizzle-orm";
  */
 export async function GET(
   req: Request,
-  context: { params: { predictionId: string } },
+  { params }: { params: Promise<{ predictionId: string }> },
 ): Promise<Response> {
   const session = await auth();
   if (!session) {
@@ -24,7 +24,7 @@ export async function GET(
   }
 
   const user = session.user;
-  const { predictionId } = await context.params;
+  const { predictionId } = await params;
 
   try {
     // Base query to fetch prediction details with joins
