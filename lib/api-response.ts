@@ -1,10 +1,5 @@
+import { ApiResponse } from "@/app/_types/api-response";
 import { NextResponse } from "next/server";
-
-export type ApiResponse<T> = {
-  code: number;
-  message: string;
-  data: T;
-};
 
 export function success<T>(
   data: T,

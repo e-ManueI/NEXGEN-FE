@@ -1,21 +1,14 @@
 import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { UserDetailResponse } from "@/app/_types/user-info";
+import { formatTimestamp } from "@/lib/date-formatter";
 
-interface AdditionalUserInfoCardProps {
-  id: string;
-  joinDate: string;
-  companyName: string;
-  status: string;
-  lastLogin: string;
-  lastUpdated: string;
-}
-
-const AdditionalUserInfoCard: React.FC<AdditionalUserInfoCardProps> = ({
+const AdditionalUserInfoCard: React.FC<UserDetailResponse> = ({
   id,
   joinDate,
   companyName,
-  status,
+  isActive,
   lastLogin,
   lastUpdated,
 }) => {
@@ -38,7 +31,12 @@ const AdditionalUserInfoCard: React.FC<AdditionalUserInfoCardProps> = ({
               <dt className="text-muted-foreground mb-1 text-sm font-medium">
                 Joined Date
               </dt>
-              <dd className="text-base font-medium">{joinDate}</dd>
+              <dd className="text-base font-medium">
+                {" "}
+                {formatTimestamp(joinDate).formatted +
+                  " " +
+                  formatTimestamp(joinDate).fromNow}
+              </dd>
             </div>
 
             <div>
@@ -57,12 +55,10 @@ const AdditionalUserInfoCard: React.FC<AdditionalUserInfoCardProps> = ({
               <dd className="text-base">
                 <Badge
                   className={
-                    status === "active"
-                      ? "bg-primary"
-                      : "bg-gray-500 hover:bg-gray-600"
+                    isActive ? "bg-primary" : "bg-gray-500 hover:bg-gray-600"
                   }
                 >
-                  {status === "active" ? "Active" : "Deactivated"}
+                  {isActive ? "Active" : "Deactivated"}
                 </Badge>
               </dd>
             </div>
@@ -71,14 +67,23 @@ const AdditionalUserInfoCard: React.FC<AdditionalUserInfoCardProps> = ({
               <dt className="text-muted-foreground mb-1 text-sm font-medium">
                 Last Login
               </dt>
-              <dd className="text-base font-medium">{lastLogin}</dd>
+              <dd className="text-base font-medium">
+                {" "}
+                {formatTimestamp(lastLogin).formatted +
+                  " " +
+                  formatTimestamp(lastLogin).fromNow}
+              </dd>
             </div>
 
             <div>
               <dt className="text-muted-foreground mb-1 text-sm font-medium">
                 Last Updated
               </dt>
-              <dd className="text-base font-medium">{lastUpdated}</dd>
+              <dd className="text-base font-medium">
+                {formatTimestamp(lastUpdated).formatted +
+                  " " +
+                  formatTimestamp(lastUpdated).fromNow}
+              </dd>
             </div>
           </div>
         </div>

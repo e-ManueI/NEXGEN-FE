@@ -1,9 +1,11 @@
 import { z } from "zod";
-import { signupSchema } from "@/lib/zod/auth";
+import { createUserSchema, editUserSchema, signupSchema } from "@/lib/zod/auth";
 import { loginSchema } from "@/lib/zod/auth";
 
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
+export type CreateUserFormData = z.infer<typeof createUserSchema>;
+export type EditUserFormData = z.infer<typeof editUserSchema>;
 
 export type LoginFormErrors = {
   email?: string[];

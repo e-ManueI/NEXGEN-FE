@@ -1,3 +1,5 @@
+import { Prediction } from "@/app/_types/prediction";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardHeader,
@@ -6,18 +8,20 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import { formatTimestamp } from "@/lib/date-formatter";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type Prediction = {
-  predictionId: string;
-  modelVersion: string;
-  companyName: string;
-  status: string;
-  approvedBy: string;
-  approvedAt: string;
-};
-
 const columns: ColumnDef<Prediction>[] = [
+  {
+    accessorKey: "predictedAt",
+    header: "Submission Time",
+    cell: ({ getValue }) => {
+      const raw = getValue() as string;
+      const { formatted } = formatTimestamp(raw);
+
+      return <div>{formatted}</div>;
+    },
+  },
   {
     accessorKey: "companyName",
     header: "Company Name",
@@ -28,15 +32,20 @@ const columns: ColumnDef<Prediction>[] = [
   },
   {
     accessorKey: "status",
-    header: "Status",
+    header: "Prediction Status",
+    cell: ({ getValue }) => {
+      const raw = getValue() as string;
+
+      return raw === "done" ? (
+        <Badge variant="default">{raw}</Badge>
+      ) : (
+        <Badge variant={"secondary"}>{raw}</Badge>
+      );
+    },
   },
   {
-    accessorKey: "approvedBy",
-    header: "Approved By",
-  },
-  {
-    accessorKey: "approvedAt",
-    header: "Created At",
+    accessorKey: "isApproved",
+    header: "Approval Status",
   },
 ];
 

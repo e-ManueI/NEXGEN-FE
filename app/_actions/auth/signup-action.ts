@@ -6,10 +6,17 @@ import { signIn } from "@/lib/auth";
 import { signupSchema } from "@/lib/zod/auth";
 import { SignupState } from "@/lib/zod/types/auth";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 
 // Signup action
+/**
+ * Handles the signup action.
+ *
+ * @param prevState - The form state right before submission.
+ * @param formData - The form data as a FormData object.
+ * @returns A result object with a success flag and either a user object or an error message/object.
+ */
 export async function signupAction(
   prevState: SignupState,
   formData: FormData,
@@ -23,15 +30,6 @@ export async function signupAction(
   }
 
   const { email, firstName, lastName, companyName, password } = parsed.data;
-
-  // TODO: Replace this with actual logic (DB call, auth, etc.)
-  console.log("Signup attempt:", {
-    email,
-    firstName,
-    lastName,
-    companyName,
-    password,
-  });
 
   // 2. Check if email already exists
   try {
@@ -71,7 +69,13 @@ export async function signupAction(
     const [existingCompany] = await db
       .select()
       .from(companyProfile)
-      .where(eq(companyProfile.companyName, companyName))
+      .where(
+        eq(
+          // wrap the column in a LOWER(...) call
+          sql`LOWER(${companyProfile.companyName})`,
+          companyName.trim().toLowerCase(),
+        ),
+      )
       .limit(1);
 
     if (existingCompany) {

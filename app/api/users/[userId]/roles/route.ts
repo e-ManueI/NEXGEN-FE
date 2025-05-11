@@ -5,6 +5,14 @@ import { user } from "@/app/_db/schema";
 import { db } from "@/app/_db";
 import { auth } from "@/lib/auth";
 
+/**
+ * GET /api/users/:userId/roles
+ *
+ * Fetches the roles of the given user.
+ *
+ * @param req NextRequest
+ * @returns ApiResponse with roles
+ */
 export async function GET(req: NextRequest) {
   // 1) Check authentication:
   const session = await auth();

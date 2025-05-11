@@ -19,48 +19,65 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AddUserDialog } from "./add-user-dialog";
 import Link from "next/link";
 import { AppRoutes } from "@/lib/routes";
 import { EditUserDialog } from "./edit-user-dialog";
-
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  companyName: string;
-  role: string;
-  isActive: string;
-};
+import { UserInfo } from "@/app/_types/user-info";
 
 interface UserTableProps {
-  data: User[];
+  data: UserInfo[];
+  onDelete: (id: string) => void;
+  onActivate: (id: string) => void;
+  onView: (id: string) => void;
+  onEdit: (updated: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }) => void;
+  isEditing: boolean;
 }
 
-export default function UserTable({ data }: UserTableProps) {
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+export default function UserTable({
+  data,
+  onDelete,
+  onActivate,
+  onView,
+  onEdit,
+  isEditing,
+}: UserTableProps) {
+  const [editingUser, setEditingUser] = useState<UserInfo | null>(null);
 
-  const columns: ColumnDef<User>[] = [
+  // when dialog “Save” is clicked, this callback fires:
+  const handleDialogSubmit = (formData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+  }) => {
+    if (!editingUser) return;
+    onEdit({ id: editingUser.id, ...formData });
+    setEditingUser(null);
+  };
+
+  const columns: ColumnDef<UserInfo>[] = [
     {
       accessorKey: "name",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => {
-        const user = row.original;
-
         return (
-          <Link
-            href={`
-        ${AppRoutes.users}/${user.id}`}
+          <div
+            className="cursor-pointer font-semibold capitalize hover:underline"
+            onClick={() => onView(row.original.id)}
           >
-            <div className="font-semibold capitalize hover:underline">
-              {row.getValue("name")}
-            </div>
-          </Link>
+            {row.getValue("name")}
+          </div>
         );
       },
     },
@@ -71,7 +88,7 @@ export default function UserTable({ data }: UserTableProps) {
       ),
     },
     {
-      accessorKey: "companyName", // match your User type
+      accessorKey: "companyName", // match your UserInfo type
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Company" />
       ),
@@ -87,6 +104,7 @@ export default function UserTable({ data }: UserTableProps) {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Status" />
       ),
+      cell: ({ row }) => (row.original.isActive ? "Active" : "Inactive"),
     },
     {
       id: "actions",
@@ -107,12 +125,24 @@ export default function UserTable({ data }: UserTableProps) {
               <DropdownMenuItem asChild>
                 <Link href={`${AppRoutes.users}/${user.id}`}>View User</Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setEditingUser(user)}>
+              <DropdownMenuItem
+                onClick={() => {
+                  setEditingUser(row.original);
+                }}
+              >
                 Edit User
               </DropdownMenuItem>
-              <DropdownMenuItem>Delete User</DropdownMenuItem>
-              <DropdownMenuItem>Deactivate User</DropdownMenuItem>
+              {row.original.isActive ? (
+                <DropdownMenuItem onClick={() => onDelete(row.original.id)}>
+                  Block User
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => onActivate(row.original.id)}>
+                  Activate User
+                </DropdownMenuItem>
+              )}
+
+              {/* <DropdownMenuItem>Deactivate User</DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -138,9 +168,12 @@ export default function UserTable({ data }: UserTableProps) {
       {/* render one EditUserDialog, controlled by state */}
       <EditUserDialog
         open={editingUser !== null}
+        user={editingUser}
         onOpenChange={(open) => {
           if (!open) setEditingUser(null);
         }}
+        onSubmit={handleDialogSubmit}
+        isEditing={isEditing}
       />
     </>
   );
