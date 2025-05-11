@@ -26,7 +26,7 @@ import NavUserWrapper from "./nav/nav-user/nav-user-wrapper";
 import { AppRoutes } from "@/lib/routes";
 import { useSession } from "next-auth/react";
 import { NavMain } from "./nav/nav-main";
-import { UserRole } from "@/app/_types/user-roles";
+import { UserRole } from "@/app/_types/user-info";
 
 export interface NavItem {
   title: string;

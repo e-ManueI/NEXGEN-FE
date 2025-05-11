@@ -30,7 +30,7 @@ import { UserProfile } from "@/app/_types/user-info";
  */
 export async function GET(
   req: Request,
-  context: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   const session = await auth();
   if (!session) {
@@ -41,7 +41,7 @@ export async function GET(
     return unauthorized("Access denied: Required role missing", 403);
   }
 
-  const { userId } = await context.params;
+  const { userId } = await params;
   console.log("userId", userId);
 
   try {
@@ -83,7 +83,7 @@ export async function GET(
  */
 export async function PATCH(
   req: Request,
-  context: { params: { userId: string } },
+  { params }: { params: Promise<{ userId: string }> },
 ) {
   const session = await auth();
   if (!session) {
@@ -94,7 +94,7 @@ export async function PATCH(
     return unauthorized("Access Denied: Required role missing.", 403);
   }
 
-  const { userId } = context.params;
+  const { userId } = await params;
 
   // Validate UUID format of user ID
   if (

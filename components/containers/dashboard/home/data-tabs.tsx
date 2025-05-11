@@ -10,16 +10,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Prediction,
-  PredictionTable,
-} from "@/components/containers/dashboard/predictions-table/prediction-table";
+import { PredictionTable } from "@/components/containers/dashboard/predictions-table/prediction-table";
 import { Badge } from "@/components/ui/badge";
 import {
   Submission,
   SubmissionTable,
 } from "../submissions-table/submission-table";
-import UserTable, { User } from "../users/user-table";
+import UserTable from "../users/user-table";
+import { Prediction } from "@/app/_types/prediction";
+import { UserInfo } from "@/app/_types/user-info";
 
 const samplePredictionData: Prediction[] = [
   {
@@ -27,16 +26,16 @@ const samplePredictionData: Prediction[] = [
     modelVersion: "v1.0",
     companyName: "TechCorp",
     status: "Approved",
-    approvedBy: "Alice",
-    approvedAt: "2025-05-06",
+    isApproved: false,
+    predictedAt: "2025-05-06",
   },
   {
     predictionId: "2",
     modelVersion: "v2.1",
     companyName: "FinanceHub",
     status: "Pending",
-    approvedBy: "Bob",
-    approvedAt: "2025-05-05",
+    isApproved: true,
+    predictedAt: "2025-05-05",
   },
 ];
 
@@ -61,14 +60,14 @@ const sampleSubmissionData: Submission[] = [
   },
 ];
 
-const sampleUsersData: User[] = [
+const sampleUsersData: UserInfo[] = [
   {
     id: "1",
     name: "Alice Johnson",
     email: "alice@example.com",
     companyName: "Acme Corp",
     role: "Admin",
-    isActive: "Yes",
+    isActive: true,
   },
   // …more users
 ];
@@ -117,7 +116,28 @@ export function DataTabs() {
         <SubmissionTable data={sampleSubmissionData} />
       </TabsContent>
       <TabsContent value="key-personnel" className="flex flex-col">
-        <UserTable data={sampleUsersData} />
+        <UserTable
+          data={sampleUsersData}
+          onDelete={function (id: string): void {
+            console.log("Delete user:", id);
+          }}
+          onActivate={function (id: string): void {
+            console.log("Activate user:", id);
+          }}
+          onView={function (id: string): void {
+            console.log("View user:", id);
+          }}
+          onEdit={function (updated: {
+            id: string;
+            firstName: string;
+            lastName: string;
+            email: string;
+            role: string;
+          }): void {
+            console.log("Edit user:", updated);
+          }}
+          isEditing={false}
+        />
       </TabsContent>
     </Tabs>
   );
