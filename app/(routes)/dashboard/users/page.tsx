@@ -26,51 +26,6 @@ export default function UserHome() {
     refreshUsers();
     refreshAnalytics();
   };
-  const handleEdit = async (updated: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    newPassword?: string;
-    role: string;
-  }) => {
-    try {
-      await editUser(updated);
-      toast.success("User updated successfully");
-      refreshAll();
-    } catch (err) {
-      console.error(err);
-      toast.error(editError ?? "Failed to update user");
-    }
-  };
-
-  // handler for delete/activate lifted completely into the parent
-  const handleUserAction = async (
-    operation: "delete" | "activate",
-    userId: string,
-  ) => {
-    const confirmMsg =
-      operation === "delete"
-        ? "Are you sure you want to delete this user?"
-        : "Are you sure you want to activate this user?";
-
-    if (!confirm(confirmMsg)) return;
-
-    try {
-      const result = await manageUserAction({ userId, operation });
-      if (result.success) {
-        toast.success(
-          operation === "delete" ? "User deleted" : "User activated",
-        );
-        refreshAll();
-      } else {
-        toast.error(result.message ?? `Failed to ${operation} user`);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error(`Failed to ${operation} user`);
-    }
-  };
 
   if (loadingA || loadingU) {
     return <WebLoader />;
@@ -117,10 +72,14 @@ export default function UserHome() {
             <AnalyticsCards data={userCards} />
             <UserTable
               data={tableData}
-              onDelete={(id) => handleUserAction("delete", id)}
-              onActivate={(id) => handleUserAction("activate", id)}
+              onDelete={(id) => handleUserMgtAction("delete", id, refreshAll)}
+              onActivate={(id) =>
+                handleUserMgtAction("activate", id, refreshAll)
+              }
               onView={(id) => router.push(` ${AppRoutes.users}/${id}`)}
-              onEdit={handleEdit}
+              onEdit={(updated) =>
+                handleUserEdit(updated, editUser, refreshAll, editError)
+              }
               isEditing={isEditing}
             />
           </div>
@@ -129,3 +88,52 @@ export default function UserHome() {
     </>
   );
 }
+
+export const handleUserMgtAction = async (
+  operation: "delete" | "activate",
+  userId: string,
+  refreshAll: () => void,
+) => {
+  const confirmMsg =
+    operation === "delete"
+      ? "Are you sure you want to delete this user?"
+      : "Are you sure you want to activate this user?";
+
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const result = await manageUserAction({ userId, operation });
+    if (result.success) {
+      toast.success(operation === "delete" ? "User deleted" : "User activated");
+      refreshAll();
+    } else {
+      toast.error(result.message ?? `Failed to ${operation} user`);
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error(`Failed to ${operation} user`);
+  }
+};
+
+export const handleUserEdit = async (
+  updated: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    newPassword?: string;
+    role: string;
+  },
+  editUser: (user: Partial<UserInfo> & { id: string }) => Promise<void>,
+  refreshAll: () => void,
+  editError?: string,
+) => {
+  try {
+    await editUser(updated);
+    toast.success("User updated successfully");
+    refreshAll();
+  } catch (err) {
+    console.error(err);
+    toast.error(editError ?? "Failed to update user");
+  }
+};

@@ -24,6 +24,7 @@ interface EditUserDialogProps {
   user: UserInfo | null;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: {
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -68,7 +69,7 @@ export function EditUserDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ firstName, lastName, email, role });
+    onSubmit({ id: user!.id, firstName, lastName, email, role });
   };
 
   return (

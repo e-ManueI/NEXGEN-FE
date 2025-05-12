@@ -1,36 +1,46 @@
-import {
-  AnalyticsCardData,
-  AnalyticsCards,
-} from "@/components/ui/analytics-cards";
+import { AnalyticsCards } from "@/components/ui/analytics-cards";
 import { ChartAreaInteractive } from "./chart-area-interactive";
 import { DataTabs } from "./data-tabs";
-
-const cards: AnalyticsCardData[] = [
-  {
-    description: "Total Predictions",
-    value: 1,
-  },
-  {
-    description: "Total Users",
-    value: 2,
-  },
-  {
-    description: "Active Users",
-    value: 2,
-  },
-  {
-    description: "Pending Prediction Reviews",
-    value: 0,
-  },
-];
+import { usePredictions } from "@/app/hooks/usePredictions";
+import { useUsers } from "@/app/hooks/useUsers";
+import WebLoader from "@/components/ui/web-loader";
 
 export function AdminDashboard() {
+  const {
+    predictions,
+    loading: pLoading,
+    refresh: refreshP,
+  } = usePredictions();
+  const { users, loading: uLoading, refresh: refreshU } = useUsers();
+
+  const refreshAll = () => {
+    refreshP();
+    refreshU();
+  };
+
+  if (pLoading && uLoading) return <WebLoader />;
+
+  const cards = [
+    { description: "Total Predictions", value: predictions.length },
+    {
+      description: "Pending Reviews",
+      value: predictions.filter((p) => p.status !== "done").length,
+    },
+    { description: "Total Users", value: users.length },
+    {
+      description: "Total Deactivated Users",
+      value: users.filter((user) => !user.isActive).length,
+    },
+  ];
   return (
     <>
-      {/* your existing admin cards, charts, tabs… */}
       <AnalyticsCards data={cards} />
       <ChartAreaInteractive />
-      <DataTabs />
+      <DataTabs
+        predictions={predictions}
+        users={users}
+        onRefreshAll={refreshAll}
+      />
     </>
   );
 }
