@@ -10,7 +10,8 @@ import { Edit2 } from "lucide-react";
 import { UserInfo } from "@/app/_types/user-info";
 
 interface Props extends UserInfo {
-  onEdit: (data: {
+  onEdit: (updated: {
+    id: string;
     firstName: string;
     lastName: string;
     email: string;

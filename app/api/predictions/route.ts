@@ -10,6 +10,39 @@ import { failure, success, unauthorized } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { eq, desc, and, SQL, sql } from "drizzle-orm";
 
+/**
+ * Handles the GET request to fetch predictions based on the authenticated user's role and filters.
+ *
+ * @param req - The incoming request object containing authentication and query parameters.
+ * @returns A response object containing the fetched predictions or an error message.
+ *
+ * ### Behavior:
+ * - **Admin/Expert Users**:
+ *   - Can fetch predictions for a specific company using the `companyId` query parameter.
+ *   - Can fetch predictions for a specific user using the `user` query parameter.
+ *   - If no valid filters are provided, all results are returned.
+ * - **Client Users**:
+ *   - Can only fetch predictions associated with their own company.
+ *   - If the user is not associated with a company, a 403 error is returned.
+ * - **Unauthorized Users**:
+ *   - Access is denied with a 403 error if the user's role is not recognized or permitted.
+ *
+ * ### Query Parameters:
+ * - `companyId` (optional): The UUID of the company to filter predictions by.
+ * - `user` (optional): The UUID of the user whose company's predictions should be fetched.
+ *
+ * ### Response:
+ * - On success: Returns a list of predictions with details such as prediction ID, company name, model version, status, approval status, and timestamps.
+ * - On failure: Returns an error message with an appropriate HTTP status code.
+ *
+ * ### Errors:
+ * - 403: Unauthorized access or client user not associated with a company.
+ * - 500: Internal server error during query execution.
+ *
+ * ### Logs:
+ * - Logs the role of the user fetching predictions.
+ * - Logs errors and specific conditions when filters are applied or fail.
+ */
 export const GET = auth(async (req) => {
   if (!req.auth || !req.auth.user) {
     return unauthorized();

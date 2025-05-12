@@ -1,21 +1,22 @@
-import { fetchPredictions } from "@/app/services/predictions";
-import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { Prediction } from "../_types/prediction";
+import { fetchPredictions } from "../services/predictions";
 
 export function usePredictions(userId?: string) {
-  const [predictions, setPredictions] = useState<Prediction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const key =
+    userId !== undefined
+      ? `/api/predictions?user=${userId}`
+      : `/api/predictions`;
 
-  useEffect(() => {
-    fetchPredictions(userId)
-      .then(setPredictions)
-      .catch((err) => {
-        console.error(err);
-        setError(err);
-        setPredictions([]); // ← explicitly set empty on error
-      })
-      .finally(() => setLoading(false));
-  }, [userId]);
-  return { predictions, loading, error };
+  const { data, error, isValidating, mutate } = useSWR<Prediction[]>(
+    key,
+    fetchPredictions,
+  );
+
+  return {
+    predictions: data ?? [],
+    loading: isValidating,
+    error,
+    refresh: () => mutate(),
+  };
 }

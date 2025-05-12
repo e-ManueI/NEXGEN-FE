@@ -12,7 +12,7 @@ import { useParams } from "next/navigation";
 import React from "react";
 import { usePredictions } from "@/app/hooks/usePredictions";
 import { PredictionTable } from "@/components/containers/dashboard/predictions-table/prediction-table";
-import { toast } from "sonner";
+import { handleUserEdit } from "@/app/_actions/edit-user-action";
 
 const UserDetailsHome = () => {
   const params = useParams();
@@ -30,23 +30,6 @@ const UserDetailsHome = () => {
   } = usePredictions(userId);
   const { editUser, isEditing, editError } = useEditUser();
 
-  const handleEdit = async (data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    role: string;
-  }) => {
-    if (!user) return;
-    try {
-      await editUser({ id: user.id, ...data });
-      toast.success("Profile updated");
-      refreshUser();
-    } catch (err) {
-      console.error(err);
-      toast.error(editError ?? "Failed to update profile");
-    }
-  };
-
   if (uLoading || pLoading) return <WebLoader />;
   if (uError || pError) return <div>{uError?.message ?? pError?.message}</div>;
 
@@ -63,7 +46,13 @@ const UserDetailsHome = () => {
 
       <div className="grid gap-6 md:grid-cols-3">
         {user && (
-          <UserDetailCard {...user} onEdit={handleEdit} isEditing={isEditing} />
+          <UserDetailCard
+            {...user}
+            onEdit={(updated) =>
+              handleUserEdit(updated, editUser, refreshUser, editError)
+            }
+            isEditing={isEditing}
+          />
         )}
         {user && <AdditionalUserInfoCard {...user} />}
       </div>

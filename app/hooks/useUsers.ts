@@ -141,6 +141,7 @@ export function useCreateUserSimple() {
 
 export function useEditUser() {
   const { refresh: refreshUsers } = useUsers();
+  const { refresh: refreshAnalytics } = useUserAnalytics();
   const { trigger, isMutating, error } = useSWRMutation(
     "/api/users",
     editUserFetcher,
@@ -150,6 +151,7 @@ export function useEditUser() {
     const result = await trigger(data);
     // after success, revalidate the users list
     await refreshUsers();
+    await refreshAnalytics();
     return result;
   };
 
