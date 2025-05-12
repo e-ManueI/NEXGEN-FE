@@ -15,13 +15,12 @@ import { Badge } from "@/components/ui/badge";
 import UserTable from "../users/user-table";
 import { Prediction } from "@/app/_types/prediction";
 import { UserInfo } from "@/app/_types/user-info";
-import {
-  handleUserEdit,
-  handleUserMgtAction,
-} from "@/app/(routes)/dashboard/users/page";
+
 import { useRouter } from "next/navigation";
 import { useEditUser } from "@/app/hooks/useUsers";
 import { AppRoutes } from "@/lib/routes";
+import { handleUserMgtAction } from "@/app/_actions/manage-user-action";
+import { handleUserEdit } from "@/app/_actions/edit-user-action";
 
 export function DataTabs({
   predictions,

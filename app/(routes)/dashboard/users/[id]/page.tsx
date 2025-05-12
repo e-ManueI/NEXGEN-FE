@@ -12,7 +12,7 @@ import { useParams } from "next/navigation";
 import React from "react";
 import { usePredictions } from "@/app/hooks/usePredictions";
 import { PredictionTable } from "@/components/containers/dashboard/predictions-table/prediction-table";
-import { handleUserEdit } from "../page";
+import { handleUserEdit } from "@/app/_actions/edit-user-action";
 
 const UserDetailsHome = () => {
   const params = useParams();

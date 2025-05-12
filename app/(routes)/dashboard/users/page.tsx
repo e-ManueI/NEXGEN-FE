@@ -7,10 +7,10 @@ import UserTable from "@/components/containers/dashboard/users/user-table";
 import { useEditUser, useUserAnalytics, useUsers } from "@/app/hooks/useUsers";
 import WebLoader from "@/components/ui/web-loader";
 import { UserInfo } from "@/app/_types/user-info";
-import { manageUserAction } from "@/app/_actions/auth/delete-user-action";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AppRoutes } from "@/lib/routes";
+import { handleUserMgtAction } from "@/app/_actions/manage-user-action";
+import { handleUserEdit } from "@/app/_actions/edit-user-action";
 
 export default function UserHome() {
   const {
@@ -88,52 +88,3 @@ export default function UserHome() {
     </>
   );
 }
-
-export const handleUserMgtAction = async (
-  operation: "delete" | "activate",
-  userId: string,
-  refreshAll: () => void,
-) => {
-  const confirmMsg =
-    operation === "delete"
-      ? "Are you sure you want to delete this user?"
-      : "Are you sure you want to activate this user?";
-
-  if (!confirm(confirmMsg)) return;
-
-  try {
-    const result = await manageUserAction({ userId, operation });
-    if (result.success) {
-      toast.success(operation === "delete" ? "User deleted" : "User activated");
-      refreshAll();
-    } else {
-      toast.error(result.message ?? `Failed to ${operation} user`);
-    }
-  } catch (err) {
-    console.error(err);
-    toast.error(`Failed to ${operation} user`);
-  }
-};
-
-export const handleUserEdit = async (
-  updated: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    newPassword?: string;
-    role: string;
-  },
-  editUser: (user: Partial<UserInfo> & { id: string }) => Promise<void>,
-  refreshAll: () => void,
-  editError?: string,
-) => {
-  try {
-    await editUser(updated);
-    toast.success("User updated successfully");
-    refreshAll();
-  } catch (err) {
-    console.error(err);
-    toast.error(editError ?? "Failed to update user");
-  }
-};
