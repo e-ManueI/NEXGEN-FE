@@ -23,3 +23,9 @@ export enum UserType {
   EXPERT = "expert",
   CLIENT = "client",
 }
+
+export enum AnalysisMembraneEnum {
+  CATION_EXCHANGE = "Cation-Exchange",
+  ANION_EXCHANGE = "Anion-Exchange",
+  BIPOLAR = "Bipolar",
+}

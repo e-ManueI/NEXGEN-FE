@@ -1,5 +1,9 @@
 import { ApiResponse } from "../_types/api-response";
-import { Prediction } from "../_types/prediction";
+import {
+  AnalysisResponse,
+  GenerateAnalysisPayload,
+  Prediction,
+} from "../_types/prediction";
 
 /**
  * Fetches a list of predictions from the API.
@@ -27,4 +31,32 @@ export async function fetchPredictions(url: string): Promise<Prediction[]> {
   }
 
   return body.data.prediction;
+}
+
+export async function generateAnalysisFetcher(
+  url: string,
+  { arg }: { arg: GenerateAnalysisPayload },
+): Promise<AnalysisResponse> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(arg),
+  });
+
+  let body: ApiResponse<AnalysisResponse>;
+  try {
+    body = await res.json();
+  } catch {
+    throw new Error("Unable to parse server response");
+  }
+  if (!res.ok) {
+    console.log("Failed to generate prediction:", body.code, body.message);
+    throw new Error(body.message || "Unknown server error");
+  } else {
+    console.log("Prediction generated successfully", body.data);
+  }
+
+  return body.data;
 }

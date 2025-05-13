@@ -30,9 +30,9 @@ const columns: ColumnDef<Prediction>[] = [
   },
   {
     accessorKey: "predictedAt",
-    header: "Predicted At",
+    header: "Submitted At",
     cell: ({ row }) => {
-      return new Date(row.getValue("predictedAt")).toDateString();
+      return new Date(row.getValue("predictedAt")).toLocaleString();
     },
   },
   {
@@ -42,9 +42,11 @@ const columns: ColumnDef<Prediction>[] = [
       const raw = getValue() as string;
 
       return raw === "done" ? (
-        <Badge variant="default">{raw}</Badge>
+        <Badge variant="default" className="capitalize">
+          {raw}
+        </Badge>
       ) : (
-        <Badge variant={"secondary"}>{raw}</Badge>
+        <Badge variant={"secondary"}>Pending</Badge>
       );
     },
   },
