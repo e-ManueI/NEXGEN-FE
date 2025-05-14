@@ -3,14 +3,15 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { EditUserDialog } from "./edit-user-dialog";
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
 import { UserInfo } from "@/app/_types/user-info";
+import UserRoleBadge from "@/components/ui/user-role-badge";
 
 interface Props extends UserInfo {
   onEdit: (updated: {
+    // TODO: pick from the userinfo
     id: string;
     firstName: string;
     lastName: string;
@@ -46,7 +47,7 @@ export const UserDetailCard: React.FC<Props> = ({
           </Avatar>
           <h2 className="text-xl font-bold">{`${name}`}</h2>
           <p className="text-muted-foreground text-sm">{email}</p>
-          <Badge className="mb-4">{role}</Badge>
+          <UserRoleBadge role={role} />
 
           <EditUserDialog
             open={open}

@@ -98,3 +98,28 @@ export type AnalysisResponse = {
   status: string;
   message: string;
 };
+
+export type PredictionResultResponse = {
+  prediction: {
+    id: string;
+    companyName: string;
+    submissionDate: string; // ISO timestamp
+    predictionStatus: string; // e.g. "pending"
+    processedBy: string; // e.g. "ML Model v2.1"
+    reviewStatus: string; // e.g. "Awaiting Expert Review"
+  };
+  chloralkaliInDepth: string | null;
+  chloralkaliSummary: string | null;
+  chloralkaliComparison: string | null;
+  electrodialysisInDepth: string | null;
+  electrodialysisSummary: string | null;
+};
+
+export type PredictionResultContent = Pick<
+  PredictionResultResponse,
+  | "chloralkaliInDepth"
+  | "chloralkaliSummary"
+  | "chloralkaliComparison"
+  | "electrodialysisInDepth"
+  | "electrodialysisSummary"
+>;

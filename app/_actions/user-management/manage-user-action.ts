@@ -1,6 +1,5 @@
 import { toast } from "sonner";
-import { manageUserAction } from "./auth/delete-user-action";
-
+import { manageUserAction } from "./delete-user-action";
 
 /**
  * Handles a user management action.

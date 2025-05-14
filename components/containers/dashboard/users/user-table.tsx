@@ -32,7 +32,7 @@ interface UserTableProps {
   onDelete: (id: string) => void;
   onActivate: (id: string) => void;
   onView: (id: string) => void;
-  onEdit: (updated: {
+  onEdit: (updated: { // TODO: Use interface pick/omit
     id: string;
     firstName: string;
     lastName: string;

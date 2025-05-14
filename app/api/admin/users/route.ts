@@ -4,6 +4,7 @@ import {
   badRequest,
   conflict,
   failure,
+  forbidden,
   success,
   unauthorized,
 } from "@/lib/api-response";
@@ -35,8 +36,8 @@ export const GET = auth(async (req) => {
   }
 
   // only admins may list all users
-  if (req.auth.user.role !== "admin") {
-    return unauthorized("Access denied: Required role missing", 403);
+  if (req.auth.user.role !== UserType.ADMIN) {
+    return forbidden("Access denied: Required role missing");
   }
 
   const authUser = req.auth?.user;
@@ -92,7 +93,7 @@ export const POST = auth(async (req) => {
   }
 
   if (req.auth.user.role !== UserType.ADMIN) {
-    return failure("Forbidden: Admin access required.", 403);
+    return forbidden("Forbidden: Admin access required.");
   }
 
   let reqBody;

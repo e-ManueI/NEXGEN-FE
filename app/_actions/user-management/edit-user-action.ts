@@ -1,5 +1,5 @@
+import { UserInfo } from "@/app/_types/user-info";
 import { toast } from "sonner";
-import { UserInfo } from "../_types/user-info";
 
 /**
  * Handles the editing of a user's details.

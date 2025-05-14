@@ -29,3 +29,8 @@ export enum AnalysisMembraneEnum {
   ANION_EXCHANGE = "Anion-Exchange",
   BIPOLAR = "Bipolar",
 }
+
+export const PredictionStatus = {
+  IN_PROGRESS: "in_progress",
+  DONE: "done",
+};

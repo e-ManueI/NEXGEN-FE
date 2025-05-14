@@ -4,13 +4,17 @@ import {
   AnalyticsCards,
 } from "@/components/ui/analytics-cards";
 import UserTable from "@/components/containers/dashboard/users/user-table";
-import { useEditUser, useUserAnalytics, useUsers } from "@/app/hooks/useUsers";
+import {
+  useEditUser,
+  useUserAnalytics,
+  useUsers,
+} from "@/app/hooks/admin/useUsers";
 import WebLoader from "@/components/ui/web-loader";
 import { UserInfo } from "@/app/_types/user-info";
 import { useRouter } from "next/navigation";
 import { AppRoutes } from "@/lib/routes";
-import { handleUserMgtAction } from "@/app/_actions/manage-user-action";
-import { handleUserEdit } from "@/app/_actions/edit-user-action";
+import { handleUserMgtAction } from "@/app/_actions/user-management/manage-user-action";
+import { handleUserEdit } from "@/app/_actions/user-management/edit-user-action";
 
 export default function UserHome() {
   const {

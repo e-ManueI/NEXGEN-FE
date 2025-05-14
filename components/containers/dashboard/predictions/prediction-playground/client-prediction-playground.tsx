@@ -40,6 +40,8 @@ import { AnalysisMembraneEnum, UserType } from "@/app/_db/enum";
 import { adjustValue } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useGenerateAnalysis } from "@/app/hooks/usePredictions";
+import { useRouter } from "next/navigation";
+import { AppRoutes } from "@/lib/routes";
 
 // Define the initial state for concentrations
 const initialBrineComposition: BrineComposition = {
@@ -82,9 +84,9 @@ const initialProcessParams: ProcessParameters = {
   Reactor_Volume_L: 250.0,
 };
 
-export default function ImprovedInputDashboard() {
+export default function ClientPredictionPlayground() {
   const { data: session } = useSession();
-
+  const router = useRouter();
   const [inputMode, setInputMode] = useState("manual");
   const [brineComposition, setBrineComposition] = useState<BrineComposition>(
     initialBrineComposition,
@@ -98,7 +100,7 @@ export default function ImprovedInputDashboard() {
   );
   //   const [results, setResults] = useState<AnalysisResponse | null>(null);
   const { generateAnalysis, isGenerating, generateError } = useGenerateAnalysis(
-    { role: (session?.user?.role as UserType) || UserType.ADMIN },
+    { role: (session?.user?.role as UserType) || UserType.CLIENT },
   );
 
   // Function to update brine composition values
@@ -147,7 +149,8 @@ export default function ImprovedInputDashboard() {
       const result = await generateAnalysis(payload);
       console.log("Generated results:", result);
       if (result.status == "success") {
-        toast.success("Predictions Sent", { description: result.message });
+        toast.success("Submission Sent", { description: result.message });
+        router.push(AppRoutes.dashboard);
       } else if (result.status == "error") {
         toast.warning("Some issues were found", {
           description: result.message,

@@ -8,6 +8,7 @@ import {
   badRequest,
   notFound,
   conflict,
+  forbidden,
 } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { editUserSchema } from "@/lib/zod/auth";
@@ -15,7 +16,9 @@ import { UserProfile } from "@/app/_types/user-info";
 
 /**
  * Handles the GET request to fetch a user's details.
- * This endpoint is protected and requires authentication. Only users with the "admin" role
+ * This endpoint is protected and requires authentication. 
+ * 
+ * Only users with the "admin" role
  * are authorized to access this resource. If the user is not authenticated or does not have
  * the required role, an unauthorized response is returned.
  *
@@ -38,7 +41,7 @@ export async function GET(
   }
 
   if (session.user.role !== UserType.ADMIN) {
-    return unauthorized("Access denied: Required role missing", 403);
+    return forbidden("Access denied: Required role missing");
   }
 
   const { userId } = await params;

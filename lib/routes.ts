@@ -6,6 +6,7 @@ export const AppRoutes = {
 
   // Dashboard routes
   dashboard: "/dashboard",
-  makePredictions: "/dashboard/make-predictions",
+  makePredictions: "/dashboard/predictions/make-predictions",
   users: "/dashboard/users",
+  predictionDetails: (id: string) => `/dashboard/predictions/${id}`,
 } as const;

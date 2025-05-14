@@ -3,6 +3,26 @@ import { AnalysisResponse } from "@/app/_types/prediction";
 import { failure, forbidden, success } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 
+/**
+ * Handles the POST request to generate predictions based on the user's role and provided parameters.
+ * 
+ * This function is protected by authentication and authorization middleware. It validates the user's
+ * role and ensures that the request body and query parameters are properly formatted before forwarding
+ * the request to an external API for analysis generation.
+ * 
+ * @param req - The incoming HTTP request object, which includes authentication details, query parameters,
+ *              and the request body.
+ * 
+ * @returns A response object indicating the success or failure of the prediction generation process.
+ * 
+ * Possible responses:
+ * - 403 Forbidden: If the user is not authenticated or their role does not match the requested role.
+ * - 400 Bad Request: If the role parameter is invalid or missing, or if the request body is missing.
+ * - 500 Internal Server Error: If there is a server configuration issue or an unexpected error occurs.
+ * - 200 OK: If the analysis is successfully generated, the response includes the analysis data.
+ * 
+ * @throws Will log errors to the console if the external API call fails or if unexpected issues occur.
+ */
 export const POST = auth(async (req) => {
   if (!req.auth || !req.auth.user) {
     return forbidden();
@@ -48,7 +68,14 @@ export const POST = auth(async (req) => {
     if (!body) {
       return failure("Missing request body", 400);
     }
-    console.log("Generating analysis:", body);
+    console.log(
+      "Generating analysis:",
+      body,
+      "for role:",
+      roleParam,
+      "API:",
+      apiConfig.url,
+    );
 
     const response = await fetch(
       `${process.env.ANALYSIS_API_URL}${apiConfig.url}`,

@@ -8,6 +8,7 @@ import { failure, notFound, success, unauthorized } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { eq, and } from "drizzle-orm";
 /**
+ * @deprecated This route is deprecated and will be removed/changed in the future
  * Handles the GET request to fetch a prediction by ID.
  *
  * @param req - The incoming request object.

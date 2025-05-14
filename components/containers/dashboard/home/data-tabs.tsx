@@ -10,25 +10,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PredictionTable } from "@/components/containers/dashboard/predictions-table/prediction-table";
+import { PredictionTable } from "@/components/containers/dashboard/predictions/predictions-table/prediction-table";
 import { Badge } from "@/components/ui/badge";
 import UserTable from "../users/user-table";
 import { Prediction } from "@/app/_types/prediction";
 import { UserInfo } from "@/app/_types/user-info";
 
 import { useRouter } from "next/navigation";
-import { useEditUser } from "@/app/hooks/useUsers";
+import { useEditUser } from "@/app/hooks/admin/useUsers";
 import { AppRoutes } from "@/lib/routes";
-import { handleUserMgtAction } from "@/app/_actions/manage-user-action";
-import { handleUserEdit } from "@/app/_actions/edit-user-action";
+import { handleUserMgtAction } from "@/app/_actions/user-management/manage-user-action";
+import { handleUserEdit } from "@/app/_actions/user-management/edit-user-action";
 
 export function DataTabs({
   predictions,
   users,
+  loading,
   onRefreshAll,
 }: {
   predictions: Prediction[];
   users: UserInfo[];
+  loading: boolean;
   onRefreshAll: () => void;
 }) {
   const router = useRouter();
@@ -69,7 +71,12 @@ export function DataTabs({
       </div>
 
       <TabsContent value="predictions" className="flex flex-col">
-        <PredictionTable data={predictions} onRefresh={onRefreshAll} />
+        <PredictionTable
+          data={predictions}
+          onView={(id) => router.push(AppRoutes.predictionDetails(id))}
+          loading={loading}
+          onRefresh={onRefreshAll}
+        />
       </TabsContent>
       <TabsContent value="users" className="flex flex-col">
         <UserTable

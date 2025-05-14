@@ -1,24 +1,53 @@
 import { NextRequest, URLPattern } from "next/server";
 import { eq } from "drizzle-orm";
-import { failure, notFound, success, unauthorized } from "@/lib/api-response";
+import {
+  failure,
+  forbidden,
+  notFound,
+  success,
+  unauthorized,
+} from "@/lib/api-response";
 import { user } from "@/app/_db/schema";
 import { db } from "@/app/_db";
 import { auth } from "@/lib/auth";
 
+
 /**
- * GET /api/users/:userId/roles
+ * Handles the GET request to fetch a user's role.
  *
- * Fetches the roles of the given user.
+ * @param req - The incoming request object.
+ * @returns A response object containing the user's role or an error message.
  *
- * @param req NextRequest
- * @returns ApiResponse with roles
+ * ## Authentication
+ * - No authentication: 401
+ * - Non-matching user ID: 403
+ * - Successful authentication: Proceeds to query
+ *
+ * ## URL Pattern Matching
+ * - Extracts the user ID from the URL using the `:userId` pattern
+ *
+ * ## Query
+ * - Fetches the user's role from the database
+ * - Enforces that the logged-in user can only fetch their own role (optional)
+ * - Returns a 404 if the user is not found
+ *
+ * ## Response
+ * - On success: Returns a list containing the user's role
+ * - On failure: Returns an error message with an appropriate HTTP status code
+ *
+ * ## Errors
+ * - 400: User ID is missing
+ * - 401: Unauthenticated
+ * - 403: Forbidden
+ * - 404: User not found
+ * - 500: Failed to fetch user roles
  */
 export async function GET(req: NextRequest) {
   // 1) Check authentication:
   const session = await auth();
   if (!session) {
     // no session → 401
-    return unauthorized("Unauthenticated", 401);
+    return unauthorized("Unauthenticated");
   }
 
   // 2) Use URL pattern matching to extract userId
@@ -29,9 +58,10 @@ export async function GET(req: NextRequest) {
   if (!userId) {
     return failure("User ID is missing", 400);
   }
+
   // 3) (Optional) enforce that the logged-in user can only fetch their own role
   if (session.user.id !== userId) {
-    return unauthorized("Forbidden", 403);
+    return forbidden();
   }
 
   try {
