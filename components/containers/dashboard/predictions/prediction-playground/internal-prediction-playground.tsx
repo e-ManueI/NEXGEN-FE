@@ -37,11 +37,39 @@ import {
   ProcessParameters,
 } from "@/app/_types/prediction";
 import { AnalysisMembraneEnum, UserType } from "@/app/_db/enum";
-import { adjustValue } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useGenerateAnalysis } from "@/app/hooks/usePredictions";
 import { useRouter } from "next/navigation";
 import { AppRoutes } from "@/lib/routes";
+
+// Define constraints for each category
+const brineCompositionConstraints: Partial<
+  Record<keyof BrineComposition, { min: number; max?: number }>
+> = {
+  Li_Conc_ppm: { min: 0 },
+  Na_Conc_ppm: { min: 0 },
+  K_Conc_ppm: { min: 0 },
+  Ca_Conc_ppm: { min: 0 },
+  Mg_Conc_ppm: { min: 0 },
+  Cl_Conc_ppm: { min: 0 },
+  SO4_Conc_ppm: { min: 0 },
+  Br_Conc_ppm: { min: 0 },
+  B_Conc_ppm: { min: 0 },
+  Fe_ppm: { min: 0 },
+  Mn_ppm: { min: 0 },
+  Sr_ppm: { min: 0 },
+  Ba_ppm: { min: 0 },
+};
+
+const physicalPropsConstraints: Partial<
+  Record<keyof PhysicalProperties, { min: number; max: number }>
+> = {
+  pH: { min: 0, max: 14 },
+};
+
+const processParamsConstraints: Partial<
+  Record<keyof ProcessParameters, { min: number; max: number }>
+> = {};
 
 // Define the initial state for concentrations
 const initialBrineComposition: BrineComposition = {
@@ -98,36 +126,53 @@ export default function InternalPredictionPlayground() {
   const [membraneType, setMembraneType] = useState<AnalysisMembraneEnum>(
     AnalysisMembraneEnum.CATION_EXCHANGE,
   );
-  //   const [results, setResults] = useState<AnalysisResponse | null>(null);
   const { generateAnalysis, isGenerating, generateError } = useGenerateAnalysis(
-    { role: (session?.user?.role as UserType) || UserType.ADMIN },
+    {
+      role: (session?.user?.role as UserType) || UserType.ADMIN,
+    },
   );
 
-  // Function to update brine composition values
-  const updateBrineComposition = (
+  // Constrained update functions
+  const constrainedUpdateBrineComposition = (
     key: keyof BrineComposition,
     value: number,
   ) => {
-    setBrineComposition((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+    const constraints = brineCompositionConstraints[key];
+    if (constraints) {
+      if (constraints.min !== undefined)
+        value = Math.max(value, constraints.min);
+      if (constraints.max !== undefined)
+        value = Math.min(value, constraints.max);
+    }
+    setBrineComposition((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Function to update physical properties
-  const updatePhysicalProp = (key: keyof PhysicalProperties, value: number) => {
-    setPhysicalProps((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const constrainedUpdatePhysicalProp = (
+    key: keyof PhysicalProperties,
+    value: number,
+  ) => {
+    const constraints = physicalPropsConstraints[key];
+    if (constraints) {
+      if (constraints.min !== undefined)
+        value = Math.max(value, constraints.min);
+      if (constraints.max !== undefined)
+        value = Math.min(value, constraints.max);
+    }
+    setPhysicalProps((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Function to update process parameters
-  const updateProcessParam = (key: keyof ProcessParameters, value: number) => {
-    setProcessParams((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const constrainedUpdateProcessParam = (
+    key: keyof ProcessParameters,
+    value: number,
+  ) => {
+    const constraints = processParamsConstraints[key];
+    if (constraints) {
+      if (constraints.min !== undefined)
+        value = Math.max(value, constraints.min);
+      if (constraints.max !== undefined)
+        value = Math.min(value, constraints.max);
+    }
+    setProcessParams((prev) => ({ ...prev, [key]: value }));
   };
 
   // Function to generate predictions
@@ -148,10 +193,10 @@ export default function InternalPredictionPlayground() {
     try {
       const result = await generateAnalysis(payload);
       console.log("Generated results:", result);
-      if (result.status == "success") {
+      if (result.status === "success") {
         toast.success("Submission Sent", { description: result.message });
         router.push(AppRoutes.dashboard);
-      } else if (result.status == "error") {
+      } else if (result.status === "error") {
         toast.warning("Some issues were found", {
           description: result.message,
         });
@@ -278,14 +323,16 @@ export default function InternalPredictionPlayground() {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-r-none"
-                          onClick={() =>
-                            adjustValue(
-                              brineComposition,
-                              updateBrineComposition,
+                          onClick={() => {
+                            const currentValue =
+                              brineComposition[key as keyof BrineComposition];
+                            const step = 0.1;
+                            const newValue = currentValue - step;
+                            constrainedUpdateBrineComposition(
                               key as keyof BrineComposition,
-                              false,
-                            )
-                          }
+                              newValue,
+                            );
+                          }}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -294,26 +341,38 @@ export default function InternalPredictionPlayground() {
                           type="number"
                           value={value}
                           onChange={(e) =>
-                            updateBrineComposition(
+                            constrainedUpdateBrineComposition(
                               key as keyof BrineComposition,
                               Number.parseFloat(e.target.value) || 0,
                             )
                           }
                           className="z-20 h-8 rounded-none text-center"
                           step={0.1}
+                          min={
+                            brineCompositionConstraints[
+                              key as keyof BrineComposition
+                            ]?.min
+                          }
+                          max={
+                            brineCompositionConstraints[
+                              key as keyof BrineComposition
+                            ]?.max
+                          }
                         />
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-l-none"
-                          onClick={() =>
-                            adjustValue(
-                              brineComposition,
-                              updateBrineComposition,
+                          onClick={() => {
+                            const currentValue =
+                              brineComposition[key as keyof BrineComposition];
+                            const step = 0.1;
+                            const newValue = currentValue + step;
+                            constrainedUpdateBrineComposition(
                               key as keyof BrineComposition,
-                              true,
-                            )
-                          }
+                              newValue,
+                            );
+                          }}
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -341,14 +400,16 @@ export default function InternalPredictionPlayground() {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-r-none"
-                          onClick={() =>
-                            adjustValue(
-                              physicalProps,
-                              updatePhysicalProp,
+                          onClick={() => {
+                            const currentValue =
+                              physicalProps[key as keyof PhysicalProperties];
+                            const step = 0.1;
+                            const newValue = currentValue - step;
+                            constrainedUpdatePhysicalProp(
                               key as keyof PhysicalProperties,
-                              false,
-                            )
-                          }
+                              newValue,
+                            );
+                          }}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -357,26 +418,38 @@ export default function InternalPredictionPlayground() {
                           type="number"
                           value={value}
                           onChange={(e) =>
-                            updatePhysicalProp(
+                            constrainedUpdatePhysicalProp(
                               key as keyof PhysicalProperties,
                               Number.parseFloat(e.target.value) || 0,
                             )
                           }
                           className="h-8 rounded-none text-center"
                           step={0.1}
+                          min={
+                            physicalPropsConstraints[
+                              key as keyof PhysicalProperties
+                            ]?.min
+                          }
+                          max={
+                            physicalPropsConstraints[
+                              key as keyof PhysicalProperties
+                            ]?.max
+                          }
                         />
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-l-none"
-                          onClick={() =>
-                            adjustValue(
-                              physicalProps,
-                              updatePhysicalProp,
+                          onClick={() => {
+                            const currentValue =
+                              physicalProps[key as keyof PhysicalProperties];
+                            const step = 0.1;
+                            const newValue = currentValue + step;
+                            constrainedUpdatePhysicalProp(
                               key as keyof PhysicalProperties,
-                              true,
-                            )
-                          }
+                              newValue,
+                            );
+                          }}
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
@@ -404,14 +477,16 @@ export default function InternalPredictionPlayground() {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-r-none"
-                          onClick={() =>
-                            adjustValue(
-                              processParams,
-                              updateProcessParam,
+                          onClick={() => {
+                            const currentValue =
+                              processParams[key as keyof ProcessParameters];
+                            const step = 0.1;
+                            const newValue = currentValue - step;
+                            constrainedUpdateProcessParam(
                               key as keyof ProcessParameters,
-                              false,
-                            )
-                          }
+                              newValue,
+                            );
+                          }}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
@@ -420,26 +495,38 @@ export default function InternalPredictionPlayground() {
                           type="number"
                           value={value}
                           onChange={(e) =>
-                            updateProcessParam(
+                            constrainedUpdateProcessParam(
                               key as keyof ProcessParameters,
                               Number.parseFloat(e.target.value) || 0,
                             )
                           }
                           className="h-8 rounded-none text-center"
                           step={0.1}
+                          min={
+                            processParamsConstraints[
+                              key as keyof ProcessParameters
+                            ]?.min
+                          }
+                          max={
+                            processParamsConstraints[
+                              key as keyof ProcessParameters
+                            ]?.max
+                          }
                         />
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-8 w-8 rounded-l-none"
-                          onClick={() =>
-                            adjustValue(
-                              processParams,
-                              updateProcessParam,
+                          onClick={() => {
+                            const currentValue =
+                              processParams[key as keyof ProcessParameters];
+                            const step = 0.1;
+                            const newValue = currentValue + step;
+                            constrainedUpdateProcessParam(
                               key as keyof ProcessParameters,
-                              true,
-                            )
-                          }
+                              newValue,
+                            );
+                          }}
                         >
                           <Plus className="h-3 w-3" />
                         </Button>
