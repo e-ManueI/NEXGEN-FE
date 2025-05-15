@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { createUserAction } from "@/app/_actions/auth/create-user-action";
+import { createUserAction } from "@/app/_actions/user-management/create-user-action";
 import { useRouter } from "next/navigation";
 
 export function AddUserDialog() {

@@ -6,7 +6,7 @@ import {
   user,
   UserType,
 } from "@/app/_db/schema";
-import { failure, success, unauthorized } from "@/lib/api-response";
+import { failure, forbidden, success, unauthorized } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { eq, desc, and, SQL, sql } from "drizzle-orm";
 
@@ -45,7 +45,7 @@ import { eq, desc, and, SQL, sql } from "drizzle-orm";
  */
 export const GET = auth(async (req) => {
   if (!req.auth || !req.auth.user) {
-    return unauthorized();
+    return forbidden();
   }
 
   const loggedInUserRole = req.auth.user.role;

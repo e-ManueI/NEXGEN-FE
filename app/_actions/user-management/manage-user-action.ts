@@ -1,6 +1,5 @@
 import { toast } from "sonner";
-import { manageUserAction } from "./auth/delete-user-action";
-
+import { manageUserAction } from "./delete-user-action";
 
 /**
  * Handles a user management action.
@@ -31,7 +30,9 @@ export const handleUserMgtAction = async (
   try {
     const result = await manageUserAction({ userId, operation });
     if (result.success) {
-      toast.success(operation === "delete" ? "User deleted" : "User activated");
+      toast.success(
+        operation === "delete" ? "User Deactivated" : "User activated",
+      );
       refreshAll();
     } else {
       toast.error(result.message ?? `Failed to ${operation} user`);

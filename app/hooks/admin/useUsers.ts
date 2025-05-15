@@ -3,19 +3,17 @@ import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 
 import {
-  createUser,
-  editUserFetcher,
-  fetchUserAnalytics,
-  fetchUserDetail,
-  fetchUsers,
-} from "@/app/services/users";
-import {
   CreateUserPayload,
   CreateUserResponse,
   UserAnalyticsResponse,
   UserDetailResponse,
   UserInfo,
 } from "@/app/_types/user-info";
+import fetchUsers from "@/app/services/admin/fetch-users";
+import fetchUserAnalytics from "@/app/services/admin/fetch-users-analytics";
+import fetchUserDetail from "@/app/services/admin/fetch-user-details";
+import createUser from "@/app/services/admin/create-user";
+import editUserFetcher from "@/app/services/admin/edit-user-details";
 
 /**
  * Custom hook to retrieve user analytics data such as total users, new users,
@@ -31,7 +29,7 @@ export function useUserAnalytics() {
   // Using SWR for data fetching and caching
   const { data, error, isLoading, mutate } =
     useSWR<UserAnalyticsResponse | null>(
-      "/api/users/analytics", // Endpoint to fetch user analytics
+      "/api/admin/users/analytics", // Endpoint to fetch user analytics
       fetchUserAnalytics, // Function to fetch the analytics data
     );
 
@@ -59,7 +57,7 @@ export function useUserAnalytics() {
 export function useUsers() {
   // Destructure SWR response to manage user data
   const { data, error, isLoading, mutate } = useSWR<UserInfo[]>(
-    "/api/users", // Endpoint to fetch the list of users
+    "/api/admin/users", // Endpoint to fetch the list of users
     fetchUsers, // Function responsible for fetching users data from the API
   );
 
@@ -84,7 +82,7 @@ export function useUsers() {
  */
 export function useUserDetail(userId: string) {
   const { data, error, isValidating, mutate } = useSWR<UserDetailResponse>(
-    `/api/users/${userId}`,
+    `/api/admin/users/${userId}`,
     fetchUserDetail,
   );
 
@@ -97,6 +95,7 @@ export function useUserDetail(userId: string) {
 }
 
 /**
+ * @deprecated This hook is deprecated and will be removed in the future
  * Creates a new user using the `createUser` action.
  *
  * @returns An object with the following properties:
@@ -139,11 +138,19 @@ export function useCreateUserSimple() {
   return { submit, loading, error, data, fieldErrors };
 }
 
+/**
+ * Edits a user using the `editUser` action.
+ *
+ * @returns An object with the following properties:
+ *   - `editUser`: A function to edit the user.
+ *   - `isEditing`: A boolean indicating whether the user is currently being edited.
+ *   - `editError`: An error object if the user could not be edited, or null if the user was edited successfully.
+ */
 export function useEditUser() {
   const { refresh: refreshUsers } = useUsers();
   const { refresh: refreshAnalytics } = useUserAnalytics();
   const { trigger, isMutating, error } = useSWRMutation(
-    "/api/users",
+    "/api/admin/users",
     editUserFetcher,
   );
 

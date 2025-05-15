@@ -4,18 +4,18 @@ import AdditionalUserInfoCard from "@/components/containers/dashboard/users/addi
 import { UserDetailCard } from "@/components/containers/dashboard/users/user-detail-card";
 import { Button } from "@/components/ui/button";
 import WebLoader from "@/components/ui/web-loader";
-import { useEditUser, useUserDetail } from "@/app/hooks/useUsers";
+import { useEditUser, useUserDetail } from "@/app/hooks/admin/useUsers";
 import { AppRoutes } from "@/lib/routes";
 import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { usePredictions } from "@/app/hooks/usePredictions";
-import { PredictionTable } from "@/components/containers/dashboard/predictions-table/prediction-table";
-import { handleUserEdit } from "@/app/_actions/edit-user-action";
+import { PredictionTable } from "@/components/containers/dashboard/predictions/predictions-table/prediction-table";
+import { handleUserEdit } from "@/app/_actions/user-management/edit-user-action";
 
 const UserDetailsHome = () => {
   const params = useParams();
+  const router = useRouter();
   const userId = params.id as string;
   const {
     user,
@@ -30,16 +30,26 @@ const UserDetailsHome = () => {
   } = usePredictions(userId);
   const { editUser, isEditing, editError } = useEditUser();
 
-  if (uLoading || pLoading) return <WebLoader />;
-  if (uError || pError) return <div>{uError?.message ?? pError?.message}</div>;
+  if (pLoading || uLoading) return <WebLoader />;
+  if (uError || pError) return <div>Something went wrong</div>;
 
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="outline" size="icon" asChild>
-          <Link href={AppRoutes.users}>
-            <ArrowLeft className="h-4 w-4" />
-          </Link>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => {
+            // if there’s a history entry, go back;
+            // otherwise fall-back to dashboard (optional)
+            if (window.history.length > 1) {
+              router.back();
+            } else {
+              router.push(AppRoutes.dashboard);
+            }
+          }}
+        >
+          <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-3xl font-bold tracking-tight">User Details</h1>
       </div>
@@ -57,7 +67,12 @@ const UserDetailsHome = () => {
         {user && <AdditionalUserInfoCard {...user} />}
       </div>
 
-      <PredictionTable data={predictions} />
+      <PredictionTable
+        data={predictions}
+        onRefresh={refreshUser}
+        loading={pLoading}
+        onView={(id) => router.push(AppRoutes.predictionDetails(id))}
+      />
     </div>
   );
 };

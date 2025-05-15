@@ -1,8 +1,8 @@
 import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { UserDetailResponse } from "@/app/_types/user-info";
 import { formatTimestamp } from "@/lib/date-formatter";
+import ActiveStatusBadge from "@/components/ui/active-status-badge";
 
 const AdditionalUserInfoCard: React.FC<UserDetailResponse> = ({
   id,
@@ -53,13 +53,7 @@ const AdditionalUserInfoCard: React.FC<UserDetailResponse> = ({
                 Status
               </dt>
               <dd className="text-base">
-                <Badge
-                  className={
-                    isActive ? "bg-primary" : "bg-gray-500 hover:bg-gray-600"
-                  }
-                >
-                  {isActive ? "Active" : "Deactivated"}
-                </Badge>
+                <ActiveStatusBadge isActive={isActive} />
               </dd>
             </div>
 

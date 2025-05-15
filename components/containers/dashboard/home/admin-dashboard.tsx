@@ -2,7 +2,7 @@ import { AnalyticsCards } from "@/components/ui/analytics-cards";
 import { ChartAreaInteractive } from "./chart-area-interactive";
 import { DataTabs } from "./data-tabs";
 import { usePredictions } from "@/app/hooks/usePredictions";
-import { useUsers } from "@/app/hooks/useUsers";
+import { useUsers } from "@/app/hooks/admin/useUsers";
 import WebLoader from "@/components/ui/web-loader";
 
 export function AdminDashboard() {
@@ -23,7 +23,7 @@ export function AdminDashboard() {
   const cards = [
     { description: "Total Predictions", value: predictions.length },
     {
-      description: "Pending Reviews",
+      description: "Pending Predictions",
       value: predictions.filter((p) => p.status !== "done").length,
     },
     { description: "Total Users", value: users.length },
@@ -39,6 +39,7 @@ export function AdminDashboard() {
       <DataTabs
         predictions={predictions}
         users={users}
+        loading={pLoading || uLoading}
         onRefreshAll={refreshAll}
       />
     </>

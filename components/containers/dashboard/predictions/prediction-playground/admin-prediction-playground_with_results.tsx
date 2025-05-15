@@ -24,52 +24,67 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AnalysisResponse,
+  GenerateAnalysisPayload,
+} from "@/app/_types/prediction";
+import { AnalysisMembraneEnum, UserType } from "@/app/_db/enum";
+import { useSession } from "next-auth/react";
+import { useGenerateAnalysis } from "@/app/hooks/usePredictions";
+import { toast } from "sonner";
 
-export default function AdminPredictionPlayground() {
-  // State for input values
+// Define the initial state for concentrations and process parameters
+const initialConcentrations: Omit<
+  GenerateAnalysisPayload,
+  "Membrane_Type" | "company_id" | "model_version"
+> = {
+  Li_Conc_ppm: 180.5,
+  Na_Conc_ppm: 7500.0,
+  K_Conc_ppm: 3200.0,
+  Ca_Conc_ppm: 650.0,
+  Mg_Conc_ppm: 420.0,
+  Cl_Conc_ppm: 22000.0,
+  SO4_Conc_ppm: 2800.0,
+  Br_Conc_ppm: 0.0,
+  B_Conc_ppm: 35.0,
+  Fe_ppm: 2.0,
+  Mn_ppm: 1.5,
+  Sr_ppm: 8.0,
+  Ba_ppm: 0.7,
+  pH: 6.8,
+  Viscosity_cP: 1.3,
+  Conductivity_mS_cm: 155.0,
+  Density_kg_m3: 1120.0,
+  Temperature_C: 35.0,
+  TDS_mg_L: 105000.0,
+  Turbidity_NTU: 1.5,
+  Redox_mV: 250.0,
+  Dissolved_O2_mg_L: 6.5,
+  Specific_Gravity: 1.12,
+  Specific_Heat_J_gK: 4.18,
+  Voltage_V: 3.7,
+  Current_Density_mA_cm2: 80.0,
+  Residence_Time_min: 30.0,
+  Flow_Rate_L_hr: 500.0,
+  Reactor_Volume_L: 250.0,
+};
+
+/**
+ * @deprecated — use `InternalPredictionPlayground` instead.
+ */
+export default function AdminPredictionPlaygroundWithResults() {
+  const { data: session } = useSession();
   const [inputMode, setInputMode] = useState("manual");
-  const [concentrations, setConcentrations] = useState({
-    Li_Conc_ppm: 180.5,
-    Na_Conc_ppm: 7500.0,
-    K_Conc_ppm: 3200.0,
-    Ca_Conc_ppm: 650.0,
-    Mg_Conc_ppm: 420.0,
-    Cl_Conc_ppm: 22000.0,
-    SO4_Conc_ppm: 2800.0,
-    Br_Conc_ppm: 0.0,
-    B_Conc_ppm: 35.0,
-    Fe_ppm: 2.0,
-    Mn_ppm: 1.5,
-    Sr_ppm: 8.0,
-    Ba_ppm: 0.7,
-    pH: 6.8,
-    Viscosity_cP: 1.3,
-    Conductivity_mS_cm: 155.0,
-    Density_kg_m3: 1120.0,
-    Temperature_C: 35.0,
-    TDS_mg_L: 105000.0,
-    Turbidity_NTU: 1.5,
-    Redox_mV: 250.0,
-    Dissolved_O2_mg_L: 6.5,
-    Specific_Gravity: 1.12,
-    Specific_Heat_J_gk: 4.18,
-    Voltage_V: 3.7,
-    Current_Density_mA_cm2: 80.0,
-    Residence_Time_min: 30.0,
-    Flow_Rate_L_hr: 500.0,
-    Reactor_Volume_L: 250.0,
-  });
-  const [hasResults, setHasResults] = useState(false);
-
-  // State for non-numeric inputs
+  const [concentrations, setConcentrations] = useState(initialConcentrations);
   const [processParams, setProcessParams] = useState({
-    membraneType: "ceramic",
-    extractionMethod: "adsorption",
-    pretreatmentLevel: "medium",
-    temperatureControl: true,
-    pressureLevel: 50, // for slider
-    phAdjustment: "neutral",
+    membraneType: AnalysisMembraneEnum.CATION_EXCHANGE,
   });
+  const [results, setResults] = useState<AnalysisResponse | null>(null);
+
+  // Use the generate analysis hook for admin role
+  const { generateAnalysis, isGenerating, generateError } = useGenerateAnalysis(
+    { role: (session?.user?.role as UserType) || UserType.ADMIN },
+  );
 
   // Function to update concentration values
   const updateConcentration = (
@@ -91,14 +106,13 @@ export default function AdminPredictionPlayground() {
     const newValue = increment
       ? concentrations[key] + step
       : concentrations[key] - step;
-
     updateConcentration(key, newValue);
   };
 
   // Function to update process parameters
   const updateProcessParam = (
-    key: keyof typeof processParams,
-    value: string | number | boolean,
+    key: "membraneType",
+    value: AnalysisMembraneEnum,
   ) => {
     setProcessParams((prev) => ({
       ...prev,
@@ -107,8 +121,23 @@ export default function AdminPredictionPlayground() {
   };
 
   // Function to generate results
-  const generateResults = () => {
-    setHasResults(true);
+  const handleGenerateResults = async () => {
+    const payload: GenerateAnalysisPayload = {
+      ...concentrations,
+      Membrane_Type: processParams.membraneType,
+      company_id: session?.user.companyId || "",
+      model_version: "v1.0",
+    };
+
+    try {
+      const result = await generateAnalysis(payload);
+      console.log("Generated results:", result);
+      setResults(result);
+      toast.success("Predictions Sent", { description: result.message });
+    } catch (err) {
+      console.error("Failed to generate results:", err);
+      toast.error(generateError?.message);
+    }
   };
 
   return (
@@ -138,10 +167,10 @@ export default function AdminPredictionPlayground() {
                   <RadioGroupItem value="manual" id="manual" />
                   <Label htmlFor="manual">Manual Input</Label>
                 </div>
-                <div className="flex items-center space-x-2">
+                {/* <div className="flex items-center space-x-2">
                   <RadioGroupItem value="csv" id="csv" />
                   <Label htmlFor="csv">Upload CSV</Label>
-                </div>
+                </div> */}
               </RadioGroup>
             </div>
           </div>
@@ -240,21 +269,26 @@ export default function AdminPredictionPlayground() {
                     <Select
                       value={processParams.membraneType}
                       onValueChange={(value) =>
-                        updateProcessParam("membraneType", value)
+                        updateProcessParam(
+                          "membraneType",
+                          value as AnalysisMembraneEnum,
+                        )
                       }
                     >
                       <SelectTrigger id="membrane-type" className="h-8 w-full">
                         <SelectValue placeholder="Select membrane type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ceramic">Ceramic</SelectItem>
-                        <SelectItem value="polymer">Polymer</SelectItem>
-                        <SelectItem value="composite">Composite</SelectItem>
-                        <SelectItem value="nanofiltration">
-                          Nanofiltration
+                        <SelectItem
+                          value={AnalysisMembraneEnum.CATION_EXCHANGE}
+                        >
+                          Cation-Exchange
                         </SelectItem>
-                        <SelectItem value="reverse-osmosis">
-                          Reverse Osmosis
+                        <SelectItem value={AnalysisMembraneEnum.ANION_EXCHANGE}>
+                          Anion-Exchange
+                        </SelectItem>
+                        <SelectItem value={AnalysisMembraneEnum.BIPOLAR}>
+                          Bipolar
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -409,9 +443,13 @@ export default function AdminPredictionPlayground() {
           </div>
         </CardContent>
         <CardFooter className="">
-          <Button className="w-full" onClick={generateResults}>
+          <Button
+            className="w-full"
+            onClick={handleGenerateResults}
+            disabled={isGenerating}
+          >
             <Zap className="mr-2 h-4 w-4" />
-            Generate Predictions
+            {isGenerating ? "Generating..." : "Generate Predictions"}
           </Button>
         </CardFooter>
       </Card>
@@ -428,7 +466,13 @@ export default function AdminPredictionPlayground() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {!hasResults ? (
+          {generateError && (
+            <Alert className="mb-4 border-red-200 bg-red-50">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{generateError.message}</AlertDescription>
+            </Alert>
+          )}
+          {!results ? (
             <div className="flex h-[400px] flex-col items-center justify-center text-center">
               <Beaker className="text-muted-foreground mb-4 h-16 w-16" />
               <h3 className="mb-2 text-lg font-medium">

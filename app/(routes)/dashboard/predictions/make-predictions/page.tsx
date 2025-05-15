@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import WebLoader from "@/components/ui/web-loader";
 import PermissionDeniedCard from "@/components/ui/permission-denied-card";
-import AdminPredictionPlayground from "@/components/containers/dashboard/prediction-playground/admin-prediction-playground";
-import ClientPredictionPlayground from "@/components/containers/dashboard/prediction-playground/client-prediction-playground";
+import ClientPredictionPlayground from "@/components/containers/dashboard/predictions/prediction-playground/client-prediction-playground";
+import InternalPredictionPlayground from "@/components/containers/dashboard/predictions/prediction-playground/internal-prediction-playground";
 
 export default function MakePredictions() {
   const { data: session, status } = useSession();
@@ -32,7 +32,7 @@ export default function MakePredictions() {
             <h1 className="text-2xl font-bold">
               Lithium Extraction Feasibility Analysis
             </h1>
-            <AdminPredictionPlayground />
+            <InternalPredictionPlayground />
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@ export default function MakePredictions() {
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 md:gap-6">
-            <h1 className="text-2xl font-bold">Your Prediction Portal</h1>
+            <h1 className="text-2xl font-bold">Your Submissions Portal</h1>
             <ClientPredictionPlayground />
           </div>
         </div>
