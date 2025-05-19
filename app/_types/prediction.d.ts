@@ -86,14 +86,6 @@ export type ProcessParameters = Pick<
   | "Reactor_Volume_L"
 >;
 
-export type ClientPrediction = {
-  predictionId: string;
-};
-
-export type AdminPrediction = {
-  predictionId: string;
-};
-
 export type AnalysisResponse = {
   status: string;
   message: string;
@@ -122,4 +114,9 @@ export type PredictionResultContent = Pick<
   | "chloralkaliComparison"
   | "electrodialysisInDepth"
   | "electrodialysisSummary"
+>;
+
+export type ClientPredictionResultContent = Pick<
+  PredictionResultResponse,
+  "chloralkaliComparison" | "chloralkaliSummary" | "electrodialysisSummary"
 >;

@@ -3,6 +3,7 @@ export const AppRoutes = {
   home: "/",
   login: "/login",
   signup: "/signup",
+  mnda: "/signup/mnda",
 
   // Dashboard routes
   dashboard: "/dashboard",

@@ -1,4 +1,4 @@
-import { LoginForm } from "@/components/containers/web/login-form";
+import { LoginForm } from "@/components/containers/web/login/login-form";
 
 // components
 import BackgroundLayout from "@/components/containers/web/background-layout";

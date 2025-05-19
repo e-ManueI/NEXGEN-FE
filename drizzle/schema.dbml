@@ -171,6 +171,7 @@ table user {
 }
 
 table user_policy {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
   user_id uuid [not null]
   policy_id uuid [not null]
   agreed_at timestamp [not null, default: `now()`]

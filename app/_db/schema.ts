@@ -224,6 +224,7 @@ export const policy = pgTable("policy", {
 /// The `isAccepted` column indicates whether the user has accepted the policy.
 /// The `userId` and `policyId` columns are foreign keys referencing the `user` and `policy` tables, respectively.
 export const userPolicy = pgTable("user_policy", {
+  id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

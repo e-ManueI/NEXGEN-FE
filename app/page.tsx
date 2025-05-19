@@ -12,7 +12,7 @@ export default function Home() {
         <Button asChild size={"lg"}>
           <Link href="/signup">Register</Link>
         </Button>
-        <Button variant={"outline"} size={"lg"}>
+        <Button asChild variant={"outline"} size={"lg"}>
           <Link href="/login">Login</Link>
         </Button>
       </div>

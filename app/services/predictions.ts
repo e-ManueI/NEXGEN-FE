@@ -33,6 +33,14 @@ export async function fetchPredictions(url: string): Promise<Prediction[]> {
   return body.data.prediction;
 }
 
+/**
+ * Sends a POST request to the API to generate an analysis.
+ *
+ * @param url - The URL of the API endpoint to send the request to.
+ * @param arg - The payload to send with the request, an object containing the analysis parameters.
+ * @returns A Promise resolving to the analysis response.
+ * @throws An error if the API responds with a non-200 status or if JSON parsing fails.
+ */
 export async function generateAnalysisFetcher(
   url: string,
   { arg }: { arg: GenerateAnalysisPayload },
@@ -51,6 +59,7 @@ export async function generateAnalysisFetcher(
   } catch {
     throw new Error("Unable to parse server response");
   }
+
   if (!res.ok) {
     console.log("Failed to generate prediction:", body.code, body.message);
     throw new Error(body.message || "Unknown server error");

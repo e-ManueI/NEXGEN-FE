@@ -13,17 +13,22 @@ import { SignupFormData, SignupState } from "@/lib/zod/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AppRoutes } from "@/lib/routes";
+import { RotateCcw } from "lucide-react";
 
 const initialState: SignupState = {
   success: false,
   errors: {},
   message: undefined,
 };
+
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [state, formAction] = useActionState(signupAction, initialState);
+  const [state, formAction, isPending] = useActionState(
+    signupAction,
+    initialState,
+  );
   const router = useRouter();
   const [formData, setFormData] = useState<SignupFormData>({
     firstName: "",
@@ -39,8 +44,8 @@ export function SignupForm({
       if (state.success) {
         toast.success(state.message);
 
-        // Redirect to dashboard
-        router.push(AppRoutes.dashboard);
+        // Redirect/replace to dashboard
+        router.replace(AppRoutes.mnda);
 
         // Clear the form
         setFormData({
@@ -131,7 +136,14 @@ export function SignupForm({
               ))}
 
               <Button type="submit" className="w-full">
-                Sign Up
+                {isPending ? (
+                  <>
+                    <RotateCcw className="mr-2 h-4 w-4 animate-spin" />
+                    Signin you up…
+                  </>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
 
               <div className="text-center text-sm">

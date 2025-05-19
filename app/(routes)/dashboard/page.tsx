@@ -2,9 +2,9 @@
 import { useSession } from "next-auth/react";
 import PermissionDeniedCard from "@/components/ui/permission-denied-card";
 import { AdminDashboard } from "@/components/containers/dashboard/home/admin-dashboard";
-import { ExpertDashboard } from "@/components/containers/dashboard/home/expert-dashboard";
 import ClientDashboard from "@/components/containers/dashboard/home/client-dashboard";
 import WebLoader from "@/components/ui/web-loader";
+import ExpertDashboard from "@/components/containers/dashboard/home/expert-dashboard";
 
 export default function DashboardHome() {
   const { data: session, status } = useSession();
