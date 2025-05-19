@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Beaker } from "lucide-react";
 import { PredictionResultContent } from "@/app/_types/prediction";
 import RenderMarkdownRenderer from "@/components/ui/markdown-renderer";
+import AlertCard from "@/components/ui/alert-card";
 
 type MarkdownTabsContentProps = {
   /** the TabsContent “value” prop */
@@ -21,7 +21,7 @@ type MarkdownTabsContentProps = {
   fallback?: React.ReactNode;
 };
 
-const InternalPredictionDetails: React.FC<PredictionResultContent> = ({
+const InternalPredictionDetailsContent: React.FC<PredictionResultContent> = ({
   chloralkaliSummary,
   chloralkaliInDepth,
   chloralkaliComparison,
@@ -48,16 +48,16 @@ const InternalPredictionDetails: React.FC<PredictionResultContent> = ({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="chlr-summary">
+              <Tabs defaultValue="chlr-comparison">
                 <TabsList className="mb-4">
+                  <TabsTrigger value="chlr-comparison">
+                    Chlor-alkali Comparison
+                  </TabsTrigger>
                   <TabsTrigger value="chlr-summary">
                     Chlor-alkali Summary
                   </TabsTrigger>
                   <TabsTrigger value="chlr-depth">
                     Chlor-alkali In-Depth
-                  </TabsTrigger>
-                  <TabsTrigger value="chlr-comparison">
-                    Chlor-alkali Comparison
                   </TabsTrigger>
                   <TabsTrigger value="electro-summary">
                     Electrodialysis Summary
@@ -68,6 +68,11 @@ const InternalPredictionDetails: React.FC<PredictionResultContent> = ({
                 </TabsList>
 
                 <MarkdownTabsContent
+                  value="chlr-comparison"
+                  content={chloralkaliComparison}
+                />
+
+                <MarkdownTabsContent
                   value="chlr-summary"
                   content={chloralkaliSummary}
                 />
@@ -75,11 +80,6 @@ const InternalPredictionDetails: React.FC<PredictionResultContent> = ({
                 <MarkdownTabsContent
                   value="chlr-depth"
                   content={chloralkaliInDepth}
-                />
-
-                <MarkdownTabsContent
-                  value="chlr-comparison"
-                  content={chloralkaliComparison}
                 />
 
                 <MarkdownTabsContent
@@ -96,41 +96,35 @@ const InternalPredictionDetails: React.FC<PredictionResultContent> = ({
           </Card>
         </TabsContent>
         <TabsContent value="edited" className="mt-4 rounded-md border p-4">
-          <Alert className="border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-900/20">
-            <Beaker className="h-4 w-4 text-yellow-500" />
-            <AlertTitle>No Edited Results</AlertTitle>
-            <AlertDescription>
-              There are currently no edited results available.
-            </AlertDescription>
-          </Alert>
+          <AlertCard
+            variant="info"
+            title="No Edited Results"
+            description="There are currently no edited results available."
+          />
         </TabsContent>
         <TabsContent value="final" className="mt-4 rounded-md border p-4">
-          <Alert className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20">
-            <Beaker className="h-4 w-4 text-blue-500" />
-            <AlertTitle>No Approved Results</AlertTitle>
-            <AlertDescription>
-              There are currently no approved results available.
-            </AlertDescription>
-          </Alert>
+          <AlertCard
+            variant="info"
+            title="No Approved Results"
+            description="There are currently no approved results available."
+          />
         </TabsContent>
       </Tabs>
     </div>
   );
 };
 
-export default InternalPredictionDetails;
+export default InternalPredictionDetailsContent;
 
 const MarkdownTabsContent: React.FC<MarkdownTabsContentProps> = ({
   value,
   content,
   fallback = (
-    <Alert className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20">
-      <Beaker className="h-4 w-4 text-blue-500" />
-      <AlertTitle>No Content Available</AlertTitle>
-      <AlertDescription>
-        There is currently no content available for this tab.
-      </AlertDescription>
-    </Alert>
+    <AlertCard
+      title="No Content Available"
+      description="There is currently no content available for this tab."
+      variant="info"
+    />
   ),
 }) => (
   <TabsContent value={value}>

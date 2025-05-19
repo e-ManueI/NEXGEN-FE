@@ -24,11 +24,13 @@ import { DataTablePagination } from "./data-table-pagination";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  loading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  loading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
@@ -43,6 +45,8 @@ export function DataTable<TData, TValue>({
       sorting,
     },
   });
+
+  console.log("table", loading);
 
   return (
     <div>
@@ -89,7 +93,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {loading ? "Loading..." : "No results"}.
                 </TableCell>
               </TableRow>
             )}

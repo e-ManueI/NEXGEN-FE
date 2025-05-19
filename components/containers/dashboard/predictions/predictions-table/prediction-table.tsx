@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import PredictionStatusBadge from "@/components/ui/prediction-status-badge";
+import { cn } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { RefreshCw } from "lucide-react";
 
@@ -18,6 +19,18 @@ interface PredictionTableProps {
   onView: (id: string) => void;
   loading?: boolean;
   onRefresh?: () => void;
+
+  /**
+   * Optional hook to disable the “view” click for certain rows.
+   * Return `true` to allow the link, or `false` to render as plain text.
+   */
+  canViewRow?: (item: Prediction) => boolean;
+  omitColumns?: Array<keyof Prediction>;
+  /**
+   * Optional map to override default column headers.
+   * Keys are column IDs, values are custom header names.
+   */
+  customColumnNames?: Partial<Record<keyof Prediction, string>>;
 }
 
 export function PredictionTable({
@@ -25,40 +38,57 @@ export function PredictionTable({
   onView,
   loading,
   onRefresh,
+  canViewRow,
+  omitColumns = [],
+  customColumnNames = {}, // Default to empty object
 }: PredictionTableProps) {
-  const columns: ColumnDef<Prediction>[] = [
+  // Define columns
+  const allColumns: ColumnDef<Prediction>[] = [
     {
+      id: "predictionId",
       accessorKey: "predictionId",
-      header: "Prediction ID",
+      header: customColumnNames.predictionId || "Prediction ID",
       cell: ({ row }) => {
-        return (
-          <div
-            className="cursor-pointer font-semibold capitalize hover:underline"
-            onClick={() => onView(row.original.predictionId)}
-          >
-            {row.getValue("predictionId")}
+        const { predictionId } = row.original;
+        const enabled = canViewRow ? canViewRow(row.original) : true;
+
+        const className = cn(
+          enabled
+            ? "cursor-pointer font-semibold capitalize hover:underline "
+            : "capitalize font-normal",
+        );
+
+        return enabled ? (
+          <div className={className} onClick={() => onView(predictionId)}>
+            {predictionId}
           </div>
+        ) : (
+          <div className={className}>{predictionId}</div>
         );
       },
     },
     {
+      id: "companyName",
       accessorKey: "companyName",
-      header: "Company Name",
+      header: customColumnNames.companyName || "Company Name",
     },
     {
+      id: "modelVersion",
       accessorKey: "modelVersion",
-      header: "Model Version",
+      header: customColumnNames.modelVersion || "Model Version",
     },
     {
+      id: "predictedAt",
       accessorKey: "predictedAt",
-      header: "Submitted At",
+      header: customColumnNames.predictedAt || "Submitted At",
       cell: ({ row }) => {
         return new Date(row.getValue("predictedAt")).toLocaleString();
       },
     },
     {
+      id: "status",
       accessorKey: "status",
-      header: "Prediction Status",
+      header: customColumnNames.status || "Prediction Status",
       cell: ({ getValue }) => {
         const raw = getValue() as string;
 
@@ -66,17 +96,23 @@ export function PredictionTable({
       },
     },
     {
+      id: "isApproved",
       accessorKey: "isApproved",
-      header: "Approval Status",
+      header: customColumnNames.isApproved || "Approval Status",
       cell: ({ row }) => {
         return row.getValue("isApproved") ? (
           <Badge variant="default">Approved</Badge>
         ) : (
-          <Badge variant={"secondary"}>Pending</Badge>
+          <Badge variant="secondary">Pending</Badge>
         );
       },
     },
   ];
+
+  // 2) Filter out any columns the parent wants omitted
+  const columns = allColumns.filter(
+    (col) => !omitColumns.includes(col.id as keyof Prediction),
+  );
 
   return (
     <Card>
@@ -98,7 +134,7 @@ export function PredictionTable({
         )}
       </CardHeader>
       <CardContent>
-        <DataTable columns={columns} data={data} />
+        <DataTable columns={columns} data={data} loading={loading} />
       </CardContent>
     </Card>
   );

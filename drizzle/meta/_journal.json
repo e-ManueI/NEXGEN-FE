@@ -85,6 +85,13 @@
       "when": 1746705420325,
       "tag": "0011_illegal_kinsey_walden",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1747608897871,
+      "tag": "0012_red_riptide",
+      "breakpoints": true
     }
   ]
 }

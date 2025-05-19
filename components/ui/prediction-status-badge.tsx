@@ -38,9 +38,7 @@ const PredictionStatusBadge: React.FC<Props> = ({ status, className }) => {
       "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-200",
   };
 
-  return (
-    <Badge className={clsx("ml-2", statusClass, className)}>{label}</Badge>
-  );
+  return <Badge className={clsx("", statusClass, className)}>{label}</Badge>;
 };
 
 export default PredictionStatusBadge;

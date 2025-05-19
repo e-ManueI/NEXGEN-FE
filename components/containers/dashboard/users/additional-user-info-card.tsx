@@ -1,7 +1,7 @@
 import type React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserDetailResponse } from "@/app/_types/user-info";
-import { formatTimestamp } from "@/lib/date-formatter";
+import { formatTimestamp } from "@/lib/date-utils";
 import ActiveStatusBadge from "@/components/ui/active-status-badge";
 
 const AdditionalUserInfoCard: React.FC<UserDetailResponse> = ({

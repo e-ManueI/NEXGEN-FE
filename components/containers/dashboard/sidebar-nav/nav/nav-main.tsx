@@ -26,10 +26,16 @@ export function NavMain({ items }: { items: NavItem[] }) {
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               tooltip="Quick Create"
+              asChild
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear"
             >
-              <IconCirclePlusFilled />
-              <Link href={AppRoutes.makePredictions}>Make Predictions</Link>
+              <Link
+                href={AppRoutes.makePredictions}
+                className="flex w-full items-baseline justify-start  gap-2"
+              >
+                <IconCirclePlusFilled />
+                <span>Make Predictions</span>
+              </Link>
             </SidebarMenuButton>
             <Button
               size="icon"

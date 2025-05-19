@@ -12,6 +12,7 @@ import { LoginFormData, LoginState } from "@/lib/zod/types/auth";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AppRoutes } from "@/lib/routes";
+import { RotateCcw } from "lucide-react";
 
 const initialState: LoginState = {
   success: false,
@@ -25,10 +26,13 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   //  Destructure and ignore the prevState, then call loginAction with the form payload
-  const [state, formAction] = useActionState(
-    (_prevState: unknown, formData: FormData) => loginAction(formData),
+  const [state, formAction, isPending] = useActionState(
+    async (_prevState: LoginState, formData: FormData) => {
+      return await loginAction(formData);
+    },
     initialState,
   );
+
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -129,7 +133,14 @@ export function LoginForm({
 
               {/* Submit */}
               <Button type="submit" className="w-full">
-                Login
+                {isPending ? (
+                  <>
+                    <RotateCcw className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in…
+                  </>
+                ) : (
+                  "Login"
+                )}
               </Button>
 
               {/* Footer */}
