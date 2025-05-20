@@ -38,11 +38,8 @@ export function LoginForm({
     password: "",
   });
 
-  console.log("LoginForm state:", state); // Debug log
-
   // Whenever the action returns a message, show it as a toast
   useEffect(() => {
-    console.log("useEffect state:", state); // Debug log
     if (state && state.message) {
       if (state.success) {
         toast.success(state.message);
@@ -96,6 +93,7 @@ export function LoginForm({
                   onChange={handleChange}
                   required
                   aria-invalid={!!state.errors?.email}
+                  disabled={isPending}
                 />
                 {state.errors?.email && (
                   <p className="text-destructive text-sm">
@@ -108,12 +106,12 @@ export function LoginForm({
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <Link
+                  {/* <Link
                     href="#"
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
                     Forgot your password?
-                  </Link>
+                  </Link> */}
                 </div>
                 <Input
                   id="password"
@@ -123,6 +121,7 @@ export function LoginForm({
                   onChange={handleChange}
                   required
                   aria-invalid={!!state.errors?.password}
+                  disabled={isPending}
                 />
                 {state.errors?.password && (
                   <p className="text-destructive text-sm">

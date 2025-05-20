@@ -3,6 +3,7 @@
 import { signIn } from "@/lib/auth";
 import { loginSchema } from "@/lib/zod/auth";
 import { LoginState } from "@/lib/zod/types/auth";
+import { signOut } from "next-auth/react";
 
 /**
  * Handles the login action.
@@ -20,25 +21,30 @@ export async function loginAction(formData: FormData): Promise<LoginState> {
   }
 
   const { email, password } = parsed.data;
-
-  // 2. Attempt to sign in
+  // 2. Sign out the current user if authenticated
   try {
-    // This throws on invalid credentials
-    await signIn("credentials", { email, password, redirect: false });
-  } catch (err: unknown) {
-    console.error("[auth][error]", err);
+    // Optionally check for an existing session (if needed)
+    // Note: getSession is client-side; for server-side, use next-auth's getServerSession
+    await signOut({ redirect: false }); // Server-side signOut
+  } catch (err) {
+    console.error("[auth][signOut][error]", err);
+    // Continue with sign-in even if sign-out fails, as it may already be signed out
+  }
 
-    // pick a generic message
+  // 3. Attempt to sign in
+  try {
+    await signIn("credentials", { email, password, redirect: false });
+    return { success: true, message: "Login successful", errors: {} };
+  } catch (err: unknown) {
+    console.error("[auth][signIn][error]", err);
     const msg =
       (err as { code?: string })?.code === "credentials"
         ? "Invalid email or password"
         : "Something went wrong. Please try again.";
-
     return {
       success: false,
       message: msg,
+      errors: {},
     };
   }
-
-  return { success: true, message: "Login successful" };
 }

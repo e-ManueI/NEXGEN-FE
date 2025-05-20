@@ -13,8 +13,6 @@ export default async function fetchPredictionDetails(
     throw new Error("Failed to parse prediction details response");
   }
 
-  console.log("API /prediction returned:", body.data);
-
   if (!res.ok || body.code !== 200) {
     throw new Error(body.message || "Failed to fetch prediction details");
   }

@@ -20,8 +20,6 @@ export default async function reviewedPredictionDetailsFetcher(
     throw new Error("Failed to parse prediction details response");
   }
 
-  console.log("API client/predictions/id returned:", body.data);
-
   // check if the response status is not OK or if the API returned an error code
   if (!res.ok || body.code !== 200) {
     throw new Error(body.message || "Failed to fetch prediction details");
