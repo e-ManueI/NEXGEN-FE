@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { loginAction } from "@/app/_actions/auth/login-action";
 import { LoginFormData, LoginState } from "@/lib/zod/types/auth";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AppRoutes } from "@/lib/routes";
 import { RotateCcw } from "lucide-react";
 
@@ -25,6 +25,9 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+
   //  Destructure and ignore the prevState, then call loginAction with the form payload
   const [state, formAction, isPending] = useActionState(
     async (_prevState: LoginState, formData: FormData) => {
@@ -44,8 +47,13 @@ export function LoginForm({
       if (state.success) {
         toast.success(state.message);
 
+        // Validate redirect to ensure it starts with /dashboard
+        const redirectUrl = redirect
+          ? decodeURIComponent(redirect)
+          : AppRoutes.dashboard;
+
         // Redirect to dashboard
-        router.push(AppRoutes.dashboard);
+        router.push(redirectUrl);
 
         // Clear the form
         setFormData({
@@ -58,7 +66,8 @@ export function LoginForm({
         });
       }
     }
-  }, [router, state]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, redirect]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
