@@ -19,7 +19,6 @@ export default async function fetchUsers(url: string): Promise<UserInfo[]> {
     throw new Error("Failed to parse users response");
   }
 
-  console.log("API /users returned:", body.data);
 
   // Check if the response status is not OK or if the API returned an error code
   if (!res.ok || body.code !== 200) {
