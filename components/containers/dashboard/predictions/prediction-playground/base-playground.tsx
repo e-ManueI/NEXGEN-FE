@@ -205,7 +205,6 @@ export default function BasePredictionPlayground({
 
     try {
       const result = await generateAnalysis(payload);
-      console.log("Generated results:", result);
       if (result.status === "success") {
         toast.success("Submission Sent", { description: result.message });
         if (refreshOnSuccess) refreshPredictions();

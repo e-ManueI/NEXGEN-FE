@@ -14,7 +14,6 @@ export default async function acceptPolicyFetcher(
   url: string,
   { arg }: { arg: { policyId: string } },
 ): Promise<ApiResponse<boolean>> {
-  console.log("arg", arg);
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -30,10 +29,7 @@ export default async function acceptPolicyFetcher(
        * from the response or a default message.
        */
       const errorBody = await res.json().catch(() => ({}));
-      console.log("Console: Failed to accept policy:", errorBody);
       throw new Error(errorBody.message || "Failed to accept policy");
-    } else {
-      console.log("Policy accepted successfully");
     }
 
     // TODO: MODIFY ERROR PASSING FROM API TO THE CLIENT SIDE

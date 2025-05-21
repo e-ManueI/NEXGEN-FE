@@ -124,7 +124,6 @@ export function useCreateUserSimple() {
     } catch (err) {
       const error = err as { cause: Error | unknown };
       setError(error as Error);
-      console.log("hook error", err);
       if (error.cause && typeof error.cause === "object") {
         setFieldErrors(
           error.cause as Partial<Record<keyof CreateUserPayload, string>>,

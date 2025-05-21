@@ -191,7 +191,6 @@ const EditedResultTab = forwardRef(
           modelVersion: AppConstants.modelVersion,
           approve: false,
         });
-        console.log("Saving draft:", editedContent);
         setOriginalVersionContent(editedContent);
         setIsContentModified(false);
         toast.success("All changes saved successfully");
@@ -206,7 +205,6 @@ const EditedResultTab = forwardRef(
     };
 
     const handleSaveAndApprove = async () => {
-      console.log("Saving and approving:", editedContent);
 
       try {
         const newVersion = await createNewVersion({
@@ -228,12 +226,10 @@ const EditedResultTab = forwardRef(
     };
 
     const handleApproveVersion = async () => {
-      console.log("Approving version:", editedContent);
       if (!selectedVersionId) {
         return;
       }
 
-      console.log("Approving version with ID:", selectedVersionId);
       try {
         await approveVersion({
           approve: true,
