@@ -80,7 +80,7 @@ export const GET = auth(
         .limit(1);
 
       if (!version) {
-        return notFound("Versions not found");
+        return notFound("Versions not found", 200);
       }
 
       // Fetch content from S3 for each path associated with the version
@@ -117,4 +117,3 @@ export const GET = auth(
     }
   },
 );
-

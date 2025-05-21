@@ -82,7 +82,7 @@ export const GET = auth(
         .where(and(...conditions));
 
       if (!record) {
-        return notFound("No approved reviewed result found for this ID");
+        return notFound("No approved reviewed result found for this ID", 200);
       }
 
       // 2) Stream all the S3 files in parallel (or null if missing)

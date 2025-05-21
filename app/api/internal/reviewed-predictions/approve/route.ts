@@ -1,7 +1,7 @@
 import { db } from "@/app/_db";
 import { UserType } from "@/app/_db/enum";
 import { reviewedPredictionResult } from "@/app/_db/schema";
-import { forbidden, notFound, success, unauthorized } from "@/lib/api-response";
+import { failure, forbidden, notFound, success, unauthorized } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { eq, and, ne } from "drizzle-orm";
 
@@ -98,7 +98,7 @@ export const POST = auth(async (req) => {
       });
 
     if (!updatedVersion) {
-      return notFound("Reviewed Prediction version not found");
+      return notFound("Reviewed Prediction version not found", 200);
     }
 
     return success(
@@ -109,7 +109,6 @@ export const POST = auth(async (req) => {
     );
   } catch (error) {
     console.error("Error approving reviewed version:", error);
-    return notFound("Error approving reviewed version");
+    return failure("Error approving reviewed version");
   }
 });
-
