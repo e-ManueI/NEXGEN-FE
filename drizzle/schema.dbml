@@ -129,7 +129,7 @@ table revenue_range {
 
 table reviewed_prediction_result {
   id uuid [pk, not null, default: `gen_random_uuid()`]
-  prediction_result_id uuid [not null, unique]
+  prediction_result_id uuid [not null]
   model_version varchar(250) [not null]
   chloralkali_in_depth_path varchar [not null]
   chloralkali_summary_path varchar [not null]

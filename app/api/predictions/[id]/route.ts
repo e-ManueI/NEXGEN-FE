@@ -5,20 +5,16 @@ import {
   reviewedPredictionResult,
   UserType,
 } from "@/app/_db/schema";
-import {
-  failure,
-  forbidden,
-  notFound,
-  success,
-  unauthorized,
-} from "@/lib/api-response";
+import { failure, notFound, success, unauthorized } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { fetchS3Object } from "@/lib/s3/s3";
 import { stripS3Url } from "@/lib/s3/s3-utils";
 import { eq, and } from "drizzle-orm";
 
 /**
- * Handles GET requests to `/api/client/predictions/[id]`.
+ * Fetches details of an approved review for a prediction ID
+ *
+ * Handles GET requests to `/api/predictions/[id]`.
  * Authenticates the user using the `auth` middleware and checks
  * if the user is a client.
  *
@@ -31,12 +27,27 @@ export const GET = auth(
   async (req: Request, { params }: { params: Promise<{ id: string }> }) => {
     const session = await auth();
     if (!session) return unauthorized();
-    if (session.user.role !== UserType.CLIENT) return forbidden();
 
     const { id: predictionId } = await params;
-    console.log("Fetching approved review for prediction ID:", predictionId);
-
+    const { role: userRole, companyId: userCompanyId } = session.user;
+    console.log(
+      `Fetching approved review for prediction ID ${predictionId}` +
+        (userRole === UserType.CLIENT
+          ? ` (scoped to company ${userCompanyId})`
+          : ""),
+    );
     try {
+      // 1) Build dynamic WHERE clauses based on role
+      const conditions = [
+        eq(reviewedPredictionResult.predictionResultId, predictionId),
+        eq(reviewedPredictionResult.isApproved, true),
+      ];
+
+      // If the caller is a CLIENT, also enforce company ownership
+      if (userRole === UserType.CLIENT) {
+        conditions.push(eq(predictionResult.companyId, userCompanyId));
+      }
+
       // 1) Select the joined record
       const [record] = await db
         .select({
@@ -68,12 +79,7 @@ export const GET = auth(
           eq(predictionResult.companyId, companyProfile.id),
         )
         // only approved reviews for this prediction
-        .where(
-          and(
-            eq(reviewedPredictionResult.predictionResultId, predictionId),
-            eq(reviewedPredictionResult.isApproved, true),
-          ),
-        );
+        .where(and(...conditions));
 
       if (!record) {
         return notFound("No approved reviewed result found for this ID");

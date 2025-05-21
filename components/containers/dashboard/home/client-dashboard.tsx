@@ -18,8 +18,10 @@ import { BrainCircuit, Lightbulb, Sparkles, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { PredictionStatus } from "@/app/_db/enum";
+import { useSession } from "next-auth/react";
 export default function ClientDashboard() {
   const router = useRouter();
+  const { data: session } = useSession();
   const { hasAgreed, isLoading, isError } = useMndaCheck();
   const {
     predictions,
@@ -65,6 +67,7 @@ export default function ClientDashboard() {
             router.push(`${AppRoutes.predictionDetails(id)}`);
           }}
           loading={pLoading}
+          userRole={session?.user.role}
           onRefresh={refreshP}
           canViewRow={(row) =>
             row.status === PredictionStatus.DONE && row.isApproved

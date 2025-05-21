@@ -1,7 +1,12 @@
 "use server";
 
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+} from "@aws-sdk/client-s3";
 import { Readable } from "stream";
+import { stripS3Url } from "./s3-utils";
 
 // Ensure required environment variables are defined
 const {
@@ -81,3 +86,70 @@ export const fetchS3Object = async (key: string): Promise<string> => {
   // Convert the readable stream to a string and return it
   return streamToString(response.Body);
 };
+
+/**
+ * Safely fetches a string from an S3 bucket using the provided path.
+ * If the path is invalid or the fetch operation fails, returns null.
+ *
+ * @param {string | null | undefined} path - The optional S3 path to fetch the object from.
+ * @returns {Promise<string | null>} A promise that resolves to the fetched string or null if the fetch fails.
+ */
+export async function safeFetch(path?: string | null): Promise<string | null> {
+  // Return null if the path is not provided
+  if (!path) return null;
+
+  // Trim the path to remove any leading or trailing whitespace
+  const trimmed = path.trim();
+
+  // Remove accidental surrounding quotes from the path
+  const unquoted =
+    trimmed.startsWith('"') && trimmed.endsWith('"')
+      ? trimmed.slice(1, -1)
+      : trimmed;
+
+  // Extract the key from the S3 URL
+  const key = stripS3Url(unquoted);
+  if (!key) return null; // Return null if the key is empty
+
+  try {
+    // Fetch the object from S3 using the extracted key
+    return await fetchS3Object(key);
+  } catch (err) {
+    // Log the error and return null if the fetch operation fails
+    console.error("S3 fetch failed for key:", key, err);
+    return null;
+  }
+}
+
+/**
+ * Uploads a string (e.g. JSON) to S3 under the given URL or key.
+ *
+ * @param path – Full S3 URL (https://…/bucket/key) or raw key (folder/file.json)
+ * @param body – String payload to upload (e.g. serialized JSON)
+ * @param contentType – MIME type (defaults to application/json)
+ */
+export async function uploadS3Object(
+  path: string,
+  body: string | Buffer,
+  contentType = "application/json",
+): Promise<void> {
+  const key = stripS3Url(path);
+  if (!key) {
+    throw new Error(`Invalid S3 path: "${path}"`);
+  }
+
+  const cmd = new PutObjectCommand({
+    Bucket: AWS_BUCKET_NAME,
+    Key: key,
+    Body: body,
+    ContentType: contentType,
+  });
+
+  try {
+    await s3Client.send(cmd);
+    console.log(`Uploaded to s3://${AWS_BUCKET_NAME}/${key}`);
+  } catch (err) {
+    console.error("S3 upload failed for key:", key, err);
+    throw err;
+  }
+}

@@ -23,6 +23,6 @@
     },
     "typeRoots": ["app/_types/", "lib/_types/", "node_modules/@types"],
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/_types/*.d.ts", "lib/_types/**/*.d.ts"],
   "exclude": ["node_modules"]
 }

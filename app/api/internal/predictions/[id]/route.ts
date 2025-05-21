@@ -9,23 +9,22 @@ import {
   unauthorized,
 } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
-import { fetchS3Object } from "@/lib/s3/s3";
-import { stripS3Url } from "@/lib/s3/s3-utils";
+import { safeFetch } from "@/lib/s3/s3";
 import { eq, sql } from "drizzle-orm";
 
 /**
  * Handles the GET request for fetching a prediction by its ID.
- * 
+ *
  * This function is protected by authentication and authorization middleware.
  * It ensures that only users with the roles `ADMIN` or `EXPERT` can access the prediction data.
- * 
+ *
  * The function retrieves the prediction details from the database, including associated metadata
  * such as company name, submission date, prediction status, and review status. Additionally, it
  * fetches related files from S3 storage if available.
- * 
+ *
  * @param req - The incoming HTTP request object.
  * @param context - An object containing route parameters, including the prediction ID.
- * 
+ *
  * @returns A response object containing:
  * - `prediction`: The prediction details including ID, company name, submission date, status, and review status.
  * - `chloralkaliInDepth`: The content of the chloralkali in-depth file, if available.
@@ -33,7 +32,7 @@ import { eq, sql } from "drizzle-orm";
  * - `chloralkaliComparison`: The content of the chloralkali comparison file, if available.
  * - `electrodialysisInDepth`: The content of the electrodialysis in-depth file, if available.
  * - `electrodialysisSummary`: The content of the electrodialysis summary file, if available.
- * 
+ *
  * @throws UnauthorizedError - If the user is not authenticated.
  * @throws ForbiddenError - If the user does not have the required role.
  * @throws NotFoundError - If the prediction with the given ID is not found.
@@ -98,21 +97,11 @@ export const GET = auth(
         electrodialysisInDepth,
         electrodialysisSummary,
       ] = await Promise.all([
-        prediction.chloralkaliInDepthPath
-          ? fetchS3Object(stripS3Url(prediction.chloralkaliInDepthPath))
-          : null,
-        prediction.chloralkaliSummaryPath
-          ? fetchS3Object(stripS3Url(prediction.chloralkaliSummaryPath))
-          : null,
-        prediction.chloralkaliComparisonPath
-          ? fetchS3Object(stripS3Url(prediction.chloralkaliComparisonPath))
-          : null,
-        prediction.electrodialysisInDepthPath
-          ? fetchS3Object(stripS3Url(prediction.electrodialysisInDepthPath))
-          : null,
-        prediction.electrodialysisSummaryPath
-          ? fetchS3Object(stripS3Url(prediction.electrodialysisSummaryPath))
-          : null,
+        safeFetch(prediction.chloralkaliInDepthPath),
+        safeFetch(prediction.chloralkaliSummaryPath),
+        safeFetch(prediction.chloralkaliComparisonPath),
+        safeFetch(prediction.electrodialysisInDepthPath),
+        safeFetch(prediction.electrodialysisSummaryPath),
       ]);
 
       return success(

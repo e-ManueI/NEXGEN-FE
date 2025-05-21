@@ -1,28 +1,18 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit2 } from "lucide-react";
 import { formatTimestamp } from "@/lib/date-utils";
 import PredictionStatusBadge from "@/components/ui/prediction-status-badge";
 import { PredictionResultResponse } from "@/app/_types/prediction";
 
 function PredictionDetailsHeaderCard({
   data,
-  showEditButton,
 }: {
   data: PredictionResultResponse;
-  showEditButton: boolean;
 }) {
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Prediction ID: {data.prediction.id}</CardTitle>
-          {showEditButton && (
-            <Button variant="outline" className="flex items-center gap-2">
-              <Edit2 className="h-4 w-4" />
-              <span>Edit Results</span>
-            </Button>
-          )}
+          <CardTitle>Prediction ID: #{data.prediction.id}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
