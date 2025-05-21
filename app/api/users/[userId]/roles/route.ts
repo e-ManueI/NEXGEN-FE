@@ -11,7 +11,6 @@ import { user } from "@/app/_db/schema";
 import { db } from "@/app/_db";
 import { auth } from "@/lib/auth";
 
-
 /**
  * Handles the GET request to fetch a user's role.
  *
@@ -73,7 +72,7 @@ export async function GET(req: NextRequest) {
       .limit(1);
 
     if (result.length === 0) {
-      return notFound("User not found", 404);
+      return notFound("User not found", 200);
     }
 
     // Wrap it in an array for backwards compatibility

@@ -83,7 +83,7 @@ export const GET = auth(
         .where(eq(predictionResult.id, predictionId));
 
       if (!prediction) {
-        return notFound("Prediction not found");
+        return notFound("Prediction not found", 200);
       }
 
       const reviewStatus = prediction.hasReview

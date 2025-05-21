@@ -16,8 +16,8 @@ import { UserProfile } from "@/app/_types/user-info";
 
 /**
  * Handles the GET request to fetch a user's details.
- * This endpoint is protected and requires authentication. 
- * 
+ * This endpoint is protected and requires authentication.
+ *
  * Only users with the "admin" role
  * are authorized to access this resource. If the user is not authenticated or does not have
  * the required role, an unauthorized response is returned.

@@ -70,7 +70,7 @@ export const GET = auth(
 
       // Check if there are no versions
       if (!versions.length) {
-        return notFound("No versions found");
+        return notFound("No versions found", 200);
       }
 
       // Return the versions
