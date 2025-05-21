@@ -178,7 +178,6 @@ export const predictionResult = pgTable("prediction_result", {
 export const reviewedPredictionResult = pgTable("reviewed_prediction_result", {
   id: uuid("id").primaryKey().defaultRandom(),
   predictionResultId: uuid("prediction_result_id")
-    .unique()
     .notNull()
     .references(() => predictionResult.id, { onDelete: "cascade" }),
   modelVersion: varchar("model_version", { length: 250 }).notNull(),

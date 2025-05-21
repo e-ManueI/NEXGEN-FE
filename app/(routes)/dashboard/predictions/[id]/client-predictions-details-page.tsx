@@ -1,7 +1,7 @@
 "use client";
 import WebLoader from "@/components/ui/web-loader";
 import PredictionDetailsHeaderCard from "@/components/containers/dashboard/predictions/prediction-details/prediction-details-header-card";
-import { useReviewedPredictionDetails } from "@/app/hooks/client/useReviewedPredictionDetails";
+import { useApprovedPredictionDetails } from "@/app/hooks/useApprovedPredictionDetails";
 import AlertCard from "@/components/ui/alert-card";
 import ClientPredictionDetailsContent from "@/components/containers/dashboard/predictions/prediction-details/client-prediction-details-content";
 
@@ -11,7 +11,7 @@ function ClientPredictionDetailsPage({
   predictionId: string;
 }) {
   const { data, isLoading, isError } =
-    useReviewedPredictionDetails(predictionId);
+    useApprovedPredictionDetails(predictionId);
 
   if (isLoading) {
     return <WebLoader />;
@@ -29,9 +29,7 @@ function ClientPredictionDetailsPage({
 
   return (
     <>
-      {data && (
-        <PredictionDetailsHeaderCard data={data} showEditButton={false} />
-      )}
+      {data && <PredictionDetailsHeaderCard data={data} />}
       <ClientPredictionDetailsContent
         chloralkaliComparison={data?.chloralkaliComparison ?? null}
         chloralkaliSummary={data?.chloralkaliSummary ?? null}

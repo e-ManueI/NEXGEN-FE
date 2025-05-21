@@ -7,12 +7,11 @@ import { PredictionResultResponse } from "@/app/_types/prediction";
  * @returns a Promise resolving to a PredictionResultResponse.
  * @throws an error if the API responds with a non-200 status or if the response cannot be parsed as JSON.
  */
-export default async function reviewedPredictionDetailsFetcher(
+export default async function approvedPredictionDetailsFetcher(
   url: string,
 ): Promise<PredictionResultResponse> {
   const res = await fetch(url);
 
-  // try to parse the response body as JSON
   let body: ApiResponse<PredictionResultResponse>;
   try {
     body = await res.json();
@@ -20,11 +19,9 @@ export default async function reviewedPredictionDetailsFetcher(
     throw new Error("Failed to parse prediction details response");
   }
 
-  // check if the response status is not OK or if the API returned an error code
   if (!res.ok || body.code !== 200) {
     throw new Error(body.message || "Failed to fetch prediction details");
   }
 
-  // return the data payload from the response
   return body.data;
 }

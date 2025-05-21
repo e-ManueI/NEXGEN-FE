@@ -61,13 +61,27 @@ export const GET = auth(async (req) => {
         modelVersion: predictionResult.modelVersion,
         status: predictionResult.predictionStatus,
         predictedAt: predictionResult.updatedAt,
-        isApproved: reviewedPredictionResult.isApproved,
+        // So if there is at least one approved review, you’ll get the newest approved.
+        // If there are no approved reviews at all, you’ll get the newest un-approved.
+        // isApproved: sql`(
+        //   SELECT r.is_approved
+        //   FROM ${reviewedPredictionResult} AS r
+        //   WHERE r.prediction_result_id = ${predictionResult.id}
+        //   ORDER BY
+        //     (r.is_approved IS TRUE) DESC,  -- put all approved rows first
+        //     r.created_at DESC               -- then within each group, newest first
+        //   LIMIT 1
+        // )`,
+
+        // Sometimes we don’t care when it was approved, only whether any review has ever been approved.
+        // In this case, we can turn your subquery into a boolean aggregation:
+        isApproved: sql`(
+          SELECT BOOL_OR(r.is_approved)
+          FROM ${reviewedPredictionResult} AS r
+          WHERE r.prediction_result_id = ${predictionResult.id}
+        )`,
       })
       .from(predictionResult)
-      .leftJoin(
-        reviewedPredictionResult,
-        eq(predictionResult.id, reviewedPredictionResult.predictionResultId),
-      )
       .leftJoin(
         companyProfile,
         eq(predictionResult.companyId, companyProfile.id),

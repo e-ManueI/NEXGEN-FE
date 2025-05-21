@@ -1,3 +1,4 @@
+import { UserType } from "@/app/_db/enum";
 import { Prediction } from "@/app/_types/prediction";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ interface PredictionTableProps {
   data: Prediction[];
   onView: (id: string) => void;
   loading?: boolean;
+  userRole?: string | undefined;
   onRefresh?: () => void;
 
   /**
@@ -37,6 +39,7 @@ export function PredictionTable({
   data,
   onView,
   loading,
+  userRole,
   onRefresh,
   canViewRow,
   omitColumns = [],
@@ -100,11 +103,18 @@ export function PredictionTable({
       accessorKey: "isApproved",
       header: customColumnNames.isApproved || "Approval Status",
       cell: ({ row }) => {
-        return row.getValue("isApproved") ? (
-          <Badge variant="default">Approved</Badge>
-        ) : (
-          <Badge variant="secondary">Pending</Badge>
-        );
+        const approved = row.getValue("isApproved");
+        if (!approved) return <Badge variant="secondary">Pending</Badge>;
+
+        switch (userRole) {
+          case UserType.CLIENT:
+            return <Badge>Done</Badge>;
+          case UserType.ADMIN:
+          case UserType.EXPERT:
+            return <Badge>Approved</Badge>;
+          default:
+            return <Badge>Approved</Badge>;
+        }
       },
     },
   ];

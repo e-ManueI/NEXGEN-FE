@@ -1,0 +1,1 @@
+ALTER TABLE "reviewed_prediction_result" DROP CONSTRAINT "reviewed_prediction_result_prediction_result_id_unique";

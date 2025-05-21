@@ -1,5 +1,5 @@
 import { PredictionResultResponse } from "@/app/_types/prediction";
-import reviewedPredictionDetailsFetcher from "@/app/services/client/fetch-reviewed-prediction-details";
+import approvedPredictionDetailsFetcher from "@/app/services/fetch-reviewed-prediction-details";
 import useSWR from "swr";
 
 /**
@@ -11,11 +11,11 @@ import useSWR from "swr";
  *  - `isLoading`: A boolean indicating if the data is still being fetched.
  *  - `isError`: A boolean indicating if there was an error fetching the data.
  */
-export function useReviewedPredictionDetails(id: string) {
+export function useApprovedPredictionDetails(id: string) {
   // Use SWR to fetch prediction details if an ID is provided
   const { data, error, isLoading } = useSWR<PredictionResultResponse>(
-    id ? `/api/client/predictions/${id}` : null,
-    reviewedPredictionDetailsFetcher,
+    id ? `/api/predictions/${id}` : null,
+    approvedPredictionDetailsFetcher,
   );
 
   // Return the data, loading state, and error state
