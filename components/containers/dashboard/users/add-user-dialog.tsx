@@ -44,8 +44,6 @@ export function AddUserDialog() {
     startTransition(async () => {
       const result = await createUserAction(formData);
 
-      console.log("result", result);
-
       if (result.success) {
         // Server action returned { success: true, user: {..}  }
         toast.success("User created", {

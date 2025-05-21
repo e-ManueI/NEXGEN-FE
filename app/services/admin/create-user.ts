@@ -16,7 +16,6 @@ export default async function createUser(
   });
 
   if (!res.ok) {
-    console.log("service error", res);
     const errBody = await res.json().catch(() => ({}));
     const error = new Error(errBody.message || "Failed to create user");
     error.cause = errBody.fieldErrors || {}; // Attach fieldErrors to cause

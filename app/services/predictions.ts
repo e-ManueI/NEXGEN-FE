@@ -61,10 +61,7 @@ export async function generateAnalysisFetcher(
   }
 
   if (!res.ok) {
-    console.log("Failed to generate prediction:", body.code, body.message);
     throw new Error(body.message || "Unknown server error");
-  } else {
-    console.log("Prediction generated successfully", body.data);
   }
 
   return body.data;

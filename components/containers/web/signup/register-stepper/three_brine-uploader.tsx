@@ -245,7 +245,6 @@ export default function BrineLocationData() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Process the data - in a real app, you would send this to your backend
-    console.log("Submitting brine samples:", brineSamples);
   };
 
   // TODO: UNCOMMENT AND HANDLE SUBMIT
@@ -709,7 +708,4 @@ export default function BrineLocationData() {
       </Card>
     </form>
   );
-
-  // Debug log to check state
-  console.log("Current state:", { selectedLocations, brineSamples });
 }
