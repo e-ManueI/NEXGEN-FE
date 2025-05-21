@@ -57,7 +57,9 @@ function InternalPredictionDetailsPage({
 
   return (
     <>
-      {originalData && <PredictionDetailsHeaderCard data={originalData} />}
+      {originalData?.prediction && (
+        <PredictionDetailsHeaderCard data={originalData} />
+      )}
       <InternalPredictionDetailsContent
         originalPredResults={{
           chloralkaliSummary: originalData?.chloralkaliSummary ?? null,

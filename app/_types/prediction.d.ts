@@ -91,6 +91,7 @@ export type AnalysisResponse = {
   message: string;
 };
 
+// TODO: Might be necessary to add more data types like string | null to prevent app crashing
 export type PredictionResultResponse = {
   prediction: {
     id: string;
