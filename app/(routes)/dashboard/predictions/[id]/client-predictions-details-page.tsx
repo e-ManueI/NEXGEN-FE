@@ -17,19 +17,19 @@ function ClientPredictionDetailsPage({
     return <WebLoader />;
   }
 
-  if (isError) {
+  if (isError || !data?.prediction) {
     return (
       <AlertCard
         title="Info"
         description="Prediction not found or still in progress."
-        variant="info"
+        variant="warning"
       />
     );
   }
 
   return (
     <>
-      {data && <PredictionDetailsHeaderCard data={data} />}
+      {data?.prediction && <PredictionDetailsHeaderCard data={data} />}
       <ClientPredictionDetailsContent
         chloralkaliComparison={data?.chloralkaliComparison ?? null}
         chloralkaliSummary={data?.chloralkaliSummary ?? null}

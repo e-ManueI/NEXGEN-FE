@@ -3,7 +3,7 @@
 import { signIn } from "@/lib/auth";
 import { loginSchema } from "@/lib/zod/auth";
 import { LoginState } from "@/lib/zod/types/auth";
-import { signOut } from "next-auth/react";
+import { signOut } from "@/lib/auth";
 
 /**
  * Handles the login action.
