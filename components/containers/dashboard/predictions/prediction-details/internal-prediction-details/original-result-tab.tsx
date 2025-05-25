@@ -96,24 +96,29 @@ const InternalOriginalResultTab = ({
           </CardDescription>
         </div>
         <div className="flex gap-2 md:gap-4">
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={handleEdit}
-            disabled={isCreating}
-          >
-            <Edit2 className="h-4 w-4" />
-            <span>Edit Results</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2"
-            onClick={handleEditAndApprove}
-            disabled={isCreating}
-          >
-            <CheckCircle2Icon className="h-4 w-4" />
-            <span>Approve</span>
-          </Button>
+          {content &&
+            Object.values(content).some((value) => value !== null) && (
+              <>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={handleEdit}
+                  disabled={isCreating}
+                >
+                  <Edit2 className="h-4 w-4" />
+                  <span>Edit Results</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2"
+                  onClick={handleEditAndApprove}
+                  disabled={isCreating}
+                >
+                  <CheckCircle2Icon className="h-4 w-4" />
+                  <span>Approve</span>
+                </Button>
+              </>
+            )}
         </div>
       </CardHeader>
       <CardContent>
