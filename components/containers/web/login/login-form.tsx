@@ -53,7 +53,7 @@ export function LoginForm({
           : AppRoutes.dashboard;
 
         // Redirect to dashboard
-        router.push(redirectUrl);
+        router.replace(redirectUrl);
 
         // Clear the form
         // setFormData({
