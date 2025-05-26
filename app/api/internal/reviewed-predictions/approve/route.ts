@@ -1,7 +1,13 @@
 import { db } from "@/app/_db";
-import { UserType } from "@/app/_db/enum";
-import { reviewedPredictionResult } from "@/app/_db/schema";
-import { failure, forbidden, notFound, success, unauthorized } from "@/lib/api-response";
+import { PredictionStatus, UserType } from "@/app/_db/enum";
+import { predictionResult, reviewedPredictionResult } from "@/app/_db/schema";
+import {
+  failure,
+  forbidden,
+  notFound,
+  success,
+  unauthorized,
+} from "@/lib/api-response";
 import { auth } from "@/lib/auth";
 import { eq, and, ne } from "drizzle-orm";
 
@@ -56,14 +62,32 @@ export const POST = auth(async (req) => {
       .select({
         id: reviewedPredictionResult.id,
         predictionResultId: reviewedPredictionResult.predictionResultId,
-        isApproved: reviewedPredictionResult.isApproved,
       })
       .from(reviewedPredictionResult)
       .where(eq(reviewedPredictionResult.id, reviewedPredictionId))
       .limit(1);
 
+    if (!target) {
+      return notFound("Reviewed Prediction version not found", 200);
+    }
+
+    // Fetch the original prediction to check its status
+    const [originalPrediction] = await db
+      .select({ status: predictionResult.predictionStatus })
+      .from(predictionResult)
+      .where(eq(predictionResult.id, target.predictionResultId))
+      .limit(1);
+
+    // Block action if the original prediction status is is_pending
+    if (originalPrediction.status === PredictionStatus.IN_PROGRESS) {
+      return forbidden(
+        "This action is not allowed while the prediction status is pending.",
+      );
+    }
+
     if (approve) {
-      const [already] = await db
+      // Check if another version for this prediction is already approved
+      const [alreadyApproved] = await db
         .select()
         .from(reviewedPredictionResult)
         .where(
@@ -78,13 +102,14 @@ export const POST = auth(async (req) => {
         )
         .limit(1);
 
-      if (already) {
+      if (alreadyApproved) {
         return forbidden(
           "Another version for this prediction has already been approved",
         );
       }
     }
 
+    // Update the reviewed prediction's approval status
     const [updatedVersion] = await db
       .update(reviewedPredictionResult)
       .set({ isApproved: approve, updatedAt: new Date() })

@@ -1,47 +1,43 @@
 "use client";
+// import { type Icon } from "@tabler/icons-react";
+// import { IconDots, IconFolder, type Icon } from "@tabler/icons-react";
 
-import { IconDots, IconFolder, type Icon } from "@tabler/icons-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
+  // SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  // useSidebar,
 } from "@/components/ui/sidebar";
+import { NavItem } from "../app-sidebar";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-export function NavModels({
-  items,
-}: {
-  items: {
-    name: string;
-    url: string;
-    icon: Icon;
-  }[];
-}) {
-  const { isMobile } = useSidebar();
+export function NavModels({ items }: { items: NavItem[] }) {
+  // const { isMobile } = useSidebar();
+  const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Model</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <SidebarMenuItem key={item.name}>
+          <SidebarMenuItem key={item.title}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <Link href={item.url} data-active={pathname === item.url}>
                 <item.icon />
-                <span>{item.name}</span>
-              </a>
+                <span>{item.title}</span>
+              </Link>
             </SidebarMenuButton>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuAction
                   showOnHover
@@ -61,7 +57,7 @@ export function NavModels({
                   <span>Open</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
           </SidebarMenuItem>
         ))}
       </SidebarMenu>

@@ -99,14 +99,13 @@ export function useMndaCheck(): {
        * This is because the data is not expected to change, and we want to
        * avoid unnecessary requests to the server.
        */
-      revalidateOnFocus: false,
-
+      // revalidateOnFocus: false,
       /**
        * Do not refresh the data at a regular interval.
        * This is because the data is not expected to change, and we want to
        * avoid unnecessary requests to the server.
        */
-      refreshInterval: 0,
+      // refreshInterval: 0,
     },
   );
   return {

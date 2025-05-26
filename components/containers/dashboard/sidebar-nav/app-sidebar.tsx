@@ -6,7 +6,7 @@ import {
   IconDashboard,
   IconDatabase,
   IconInnerShadowTop,
-  IconReport,
+  // IconReport,
   IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
@@ -27,7 +27,10 @@ import { AppRoutes } from "@/lib/routes";
 import { useSession } from "next-auth/react";
 import { NavMain } from "./nav/nav-main";
 import { UserRole } from "@/app/_types/user-info";
+import { NavModels } from "./nav/nav-models";
+import { UserType } from "@/app/_db/enum";
 
+export const modelRoles = [UserType.ADMIN, UserType.EXPERT];
 export interface NavItem {
   title: string;
   url: string;
@@ -38,11 +41,7 @@ export interface NavItem {
 export interface NavData {
   navMain: NavItem[];
   navSecondary: NavItem[];
-  models: {
-    name: string;
-    url: string;
-    icon: Icon;
-  }[];
+  models: NavItem[];
 }
 
 const data: NavData = {
@@ -57,7 +56,7 @@ const data: NavData = {
       title: "Users",
       url: AppRoutes.users,
       icon: IconUsers,
-      allowedRoles: ["admin"],
+      allowedRoles: [UserType.ADMIN],
     },
   ],
   navSecondary: [
@@ -65,7 +64,7 @@ const data: NavData = {
       title: "Settings",
       url: "#",
       icon: IconSettings,
-      allowedRoles: ["admin", "expert"],
+      allowedRoles: [UserType.ADMIN, UserType.EXPERT],
     },
     // {
     //   title: "Get Help",
@@ -80,32 +79,37 @@ const data: NavData = {
   ],
   models: [
     {
-      name: "Predictions",
-      url: "#",
+      title: "Doc Ingestion",
+      url: AppRoutes.docIngestion,
       icon: IconDatabase,
+      allowedRoles: modelRoles,
     },
-    {
-      name: "Reports",
-      url: "#",
-      icon: IconReport,
-    },
+    // {
+    //   name: "Reports",
+    //   url: "#",
+    //   icon: IconReport,
+    // },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
 
-  // Filter by role
-  const visibleNavMain = data.navMain.filter((item) => {
-    // if there’s no allowedRoles field, or it’s an empty array, show to everyone
-    if (!item.allowedRoles || item.allowedRoles.length === 0) {
-      return true;
-    }
-    // otherwise only show if the user has at least one of the allowed roles
-    return Array.isArray(session?.user.role)
-      ? session.user.role.some((r) => item.allowedRoles!.includes(r))
-      : item.allowedRoles!.includes(session?.user.role as UserRole);
-  });
+  const filterByRole = (items: NavItem[] | typeof data.models) => {
+    return items.filter((item) => {
+      // if there’s no allowedRoles field, or it’s an empty array, show to everyone
+      if (!item.allowedRoles || item.allowedRoles.length === 0) {
+        return true;
+      }
+      // otherwise only show if the user has at least one of the allowed roles
+      return Array.isArray(session?.user.role)
+        ? session.user.role.some((r) => item.allowedRoles!.includes(r))
+        : item.allowedRoles!.includes(session?.user.role as UserRole);
+    });
+  };
+
+  const visibleNavMain = filterByRole(data.navMain);
+  const visibleModels = filterByRole(data.models);
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
@@ -126,8 +130,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={visibleNavMain} />
-        {/* <NavModels items={data.models} /> */}
-        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+        {modelRoles.includes(session?.user.role as UserType) && (
+          <NavModels items={visibleModels} />
+          // {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+        )}
       </SidebarContent>
       <SidebarFooter>
         <NavUserWrapper />

@@ -48,14 +48,14 @@ export function SignupForm({
         router.replace(AppRoutes.mnda);
 
         // Clear the form
-        setFormData({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          retypePassword: "",
-          companyName: "",
-        });
+        // setFormData({
+        //   firstName: "",
+        //   lastName: "",
+        //   email: "",
+        //   password: "",
+        //   retypePassword: "",
+        //   companyName: "",
+        // });
       } else {
         toast.error(state.message, {
           id: `signup-error-${Date.now()}`,

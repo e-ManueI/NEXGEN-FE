@@ -53,13 +53,13 @@ export function LoginForm({
           : AppRoutes.dashboard;
 
         // Redirect to dashboard
-        router.push(redirectUrl);
+        router.replace(redirectUrl);
 
         // Clear the form
-        setFormData({
-          email: "",
-          password: "",
-        });
+        // setFormData({
+        //   email: "",
+        //   password: "",
+        // });
       } else {
         toast.error(state.message, {
           id: `login-error-${Date.now()}`,

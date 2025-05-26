@@ -29,13 +29,13 @@ const InternalPredictionDetailsContent: React.FC<InternalContentProps> = ({
   // State to manage the active tab
   const [activeTab, setActiveTab] = useState("original");
   const editedTabRef = useRef<EditedTabRef>(null);
-  const [loadApproved, setLoadApproved] = useState(false);
+  const [loadApprovedContent, setLoadApproved] = useState(false);
 
   const {
     data: freshApproved,
     isLoading: isLoadingApproved,
     isError: isErrorApproved,
-  } = useApprovedPredictionDetails(loadApproved ? predictionId : "");
+  } = useApprovedPredictionDetails(loadApprovedContent ? predictionId : "");
 
   const approvedToShow = freshApproved
     ? {
