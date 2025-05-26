@@ -29,27 +29,31 @@ export default function ClientDashboard() {
     refresh: refreshP,
   } = usePredictions();
 
+  /// Combine all essential initial loading states
+  // `isLoading` is from MNDA check, `pLoading` is from predictions fetch
+  const initialDataLoading = isLoading || pLoading;
+
   // 1) Redirect on error
   useEffect(() => {
-    if (!isLoading && isError) {
+    if (!initialDataLoading && isError) {
       signOut({ redirectTo: AppRoutes.login });
       toast.error("Failed to load client dashboard");
     }
-  }, [isLoading, isError, router]);
+  }, [initialDataLoading, isError, router]);
 
   // 2) Redirect if MNDA not agreed
   useEffect(() => {
-    if (!isLoading && !isError && !hasAgreed) {
+    if (!initialDataLoading && !isError && !hasAgreed) {
       toast.info("MNDA agreement required", {
         description:
           "Please agree to the MNDA before accessing the client dashboard.",
       });
       router.replace(AppRoutes.mnda);
     }
-  }, [isLoading, isError, hasAgreed, router]);
+  }, [initialDataLoading, isError, hasAgreed, router]);
 
   // 3) While loading—or immediately after scheduling a redirect—show loader
-  if (isLoading || isError || !hasAgreed) {
+  if (initialDataLoading || isError || !hasAgreed) {
     return <WebLoader />;
   }
 
@@ -58,10 +62,11 @@ export default function ClientDashboard() {
 
   return (
     <div>
-      {!hasPredictions && !pLoading ? (
+      {!hasPredictions ? (
         ClientNoPredictions(router)
       ) : (
         <PredictionTable
+          description="View your predictions here. You’ll have your results within 24 hours."
           data={predictions}
           onView={(id: string) => {
             router.push(`${AppRoutes.predictionDetails(id)}`);

@@ -1,6 +1,6 @@
 import { db } from "@/app/_db";
-import { UserType } from "@/app/_db/enum";
-import { reviewedPredictionResult } from "@/app/_db/schema";
+import { PredictionStatus, UserType } from "@/app/_db/enum";
+import { predictionResult, reviewedPredictionResult } from "@/app/_db/schema";
 import {
   badRequest,
   failure,
@@ -117,6 +117,24 @@ export const POST = auth(
     if (!predictionId) return notFound("Invalid prediction ID");
 
     try {
+      // Check prediction status
+      const [originalPrediction] = await db
+        .select({ predictionStatus: predictionResult.predictionStatus })
+        .from(predictionResult)
+        .where(eq(predictionResult.id, predictionId))
+        .limit(1);
+
+      if (!originalPrediction) {
+        return notFound("Prediction not found", 200);
+      }
+
+      if (
+        originalPrediction.predictionStatus === PredictionStatus.IN_PROGRESS
+      ) {
+        return forbidden(
+          "Cannot review or approve a prediction with a pending status",
+        );
+      }
       // Parse the request body
       const { content, modelVersion, approve } = await req.json();
       if (typeof approve !== "boolean") {

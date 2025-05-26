@@ -4,6 +4,7 @@ import { siteConfig } from "./_config/site";
 import { geistMono, latoSans } from "./_config/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
+import UploadToastManager from "@/components/containers/dashboard/document-upload/upload-sonner-manager";
 
 export const metadata: Metadata = {
   title: siteConfig.name,
@@ -37,6 +38,7 @@ export default function RootLayout({
       >
         <main>{children}</main>
         <Toaster richColors />
+        <UploadToastManager />
       </body>
     </html>
   );

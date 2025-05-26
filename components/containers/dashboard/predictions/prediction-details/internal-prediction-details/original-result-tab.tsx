@@ -6,13 +6,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React, { useCallback, useMemo } from "react";
-import { Beaker, CheckCircle2Icon, Edit2 } from "lucide-react";
+import React, { useCallback, useMemo, useState } from "react";
+import { Beaker, CheckCircle2Icon, Edit2, Loader2 } from "lucide-react";
 import { PredictionResultContent } from "@/app/_types/prediction";
 import { MarkdownTabsContent } from "@/components/ui/markdown-tabs-content";
 import { AppConstants } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { useCreateNewVersion } from "@/app/hooks/internal/useReviewedVersions";
+import {
+  useCreateNewVersion,
+  useReviewedVersions,
+} from "@/app/hooks/internal/useReviewedVersions";
 import { toast } from "sonner";
 
 type InternalOriginalResultTabProps = {
@@ -28,11 +31,23 @@ const InternalOriginalResultTab = ({
   onEditSuccess,
   onApproveSuccess,
 }: InternalOriginalResultTabProps) => {
-  const {
-    createNewVersion,
-    isCreating,
-    error: createError,
-  } = useCreateNewVersion(predictionId);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isApproving, setIsApproving] = useState(false);
+
+  const { createNewVersion, error: createError } =
+    useCreateNewVersion(predictionId);
+
+  const { data: versionsData, isLoading: loadingVersions } =
+    useReviewedVersions(predictionId);
+
+  const versionsList = useMemo(
+    () => versionsData?.versions ?? [],
+    [versionsData?.versions],
+  );
+
+  const anyApprovedVersionExists = useMemo(() => {
+    return versionsList.some((v) => v.isApproved);
+  }, [versionsList]);
 
   // ────────
   // 1) TS‐safe mapping from nullable strings → required payload
@@ -50,6 +65,7 @@ const InternalOriginalResultTab = ({
 
   // Handles
   const handleEdit = useCallback(async () => {
+    setIsEditing(true);
     try {
       await createNewVersion({
         content: payloadContent,
@@ -63,10 +79,13 @@ const InternalOriginalResultTab = ({
       toast.error("Failed to create edit this version", {
         description: createError?.message,
       });
+    } finally {
+      setIsEditing(false);
     }
   }, [createNewVersion, payloadContent, onEditSuccess, createError]);
 
   const handleEditAndApprove = useCallback(async () => {
+    setIsApproving(true);
     try {
       await createNewVersion({
         content: payloadContent,
@@ -80,6 +99,8 @@ const InternalOriginalResultTab = ({
       toast.error("Failed to approve version", {
         description: createError?.message,
       });
+    } finally {
+      setIsApproving(false);
     }
   }, [createNewVersion, payloadContent, onApproveSuccess, createError]);
 
@@ -103,20 +124,30 @@ const InternalOriginalResultTab = ({
                   variant="outline"
                   className="flex items-center gap-2"
                   onClick={handleEdit}
-                  disabled={isCreating}
+                  disabled={isEditing || isApproving || loadingVersions}
                 >
-                  <Edit2 className="h-4 w-4" />
+                  {isEditing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Edit2 className="h-4 w-4" />
+                  )}
                   <span>Edit Results</span>
                 </Button>
-                <Button
-                  variant="outline"
-                  className="flex items-center gap-2"
-                  onClick={handleEditAndApprove}
-                  disabled={isCreating}
-                >
-                  <CheckCircle2Icon className="h-4 w-4" />
-                  <span>Approve</span>
-                </Button>
+                {!loadingVersions && !anyApprovedVersionExists && (
+                  <Button
+                    variant="outline"
+                    className="flex items-center gap-2"
+                    onClick={handleEditAndApprove}
+                    disabled={isApproving || isEditing || loadingVersions}
+                  >
+                    {isApproving ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle2Icon className="h-4 w-4" />
+                    )}
+                    <span>Approve</span>
+                  </Button>
+                )}
               </>
             )}
         </div>

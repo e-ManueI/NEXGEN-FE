@@ -56,10 +56,10 @@ export function LoginForm({
         router.push(redirectUrl);
 
         // Clear the form
-        setFormData({
-          email: "",
-          password: "",
-        });
+        // setFormData({
+        //   email: "",
+        //   password: "",
+        // });
       } else {
         toast.error(state.message, {
           id: `login-error-${Date.now()}`,

@@ -16,6 +16,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { RefreshCw } from "lucide-react";
 
 interface PredictionTableProps {
+  title?: string;
+  description?: string;
   data: Prediction[];
   onView: (id: string) => void;
   loading?: boolean;
@@ -36,6 +38,8 @@ interface PredictionTableProps {
 }
 
 export function PredictionTable({
+  title = "Recent Predictions",
+  description = "See a list of predictions",
   data,
   onView,
   loading,
@@ -128,8 +132,8 @@ export function PredictionTable({
     <Card>
       <CardHeader className="flex items-center justify-between">
         <div>
-          <CardTitle>Recent Predictions</CardTitle>
-          <CardDescription>See a list of predictions</CardDescription>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </div>
         {onRefresh && (
           <Button
