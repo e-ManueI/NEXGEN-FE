@@ -1,6 +1,20 @@
-import { failure, success } from "@/lib/api-response";
+import { UserType } from "@/app/_db/enum";
+import { failure, forbidden, success, unauthorized } from "@/lib/api-response";
+import { auth } from "@/lib/auth";
 
-export async function POST(request: Request) {
+export const POST = auth(async (req) => {
+  const session = req.auth;
+  if (!session?.user) {
+    return unauthorized();
+  }
+
+  if (
+    session.user.role !== UserType.ADMIN &&
+    session.user.role !== UserType.EXPERT
+  ) {
+    return forbidden("Access Denied: Required role missing");
+  }
+
   const DOCUMENT_INGESTION_API_URL = process.env.DOCUMENT_INGESTION_API_URL;
 
   if (!DOCUMENT_INGESTION_API_URL) {
@@ -10,7 +24,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const formData = await request.formData();
+    const formData = await req.formData();
     const backendResponse = await fetch(
       `${DOCUMENT_INGESTION_API_URL}/upload-pdfs/`,
       {
@@ -36,4 +50,4 @@ export async function POST(request: Request) {
     console.error("Error in API route:", error);
     return failure("An unexpected error occurred during document upload", 500);
   }
-}
+});
