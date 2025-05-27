@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ChartTimeRangeEnum } from "@/app/_db/enum";
+import { Loader2 } from "lucide-react";
 
 export const description = "An interactive area chart";
 
@@ -80,15 +81,6 @@ export function ChartAreaInteractive({
     approvedReviewedPredictions: item.approvedReviewedPredictions,
   }));
 
-  const allZero =
-    chartData.length === 0 ||
-    chartData.every(
-      (item) =>
-        item.predictions === 0 &&
-        item.reviewedPredictions === 0 &&
-        item.approvedReviewedPredictions === 0,
-    );
-
   return (
     <Card className="@container/card">
       <CardHeader>
@@ -108,13 +100,25 @@ export function ChartAreaInteractive({
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
             <ToggleGroupItem value={ChartTimeRangeEnum.LAST_3MONTHS}>
-              Last 3 months
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Last 3 months"
+              )}
             </ToggleGroupItem>
             <ToggleGroupItem value={ChartTimeRangeEnum.LAST_30DAYS}>
-              Last 30 days
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Last 30 days"
+              )}
             </ToggleGroupItem>
             <ToggleGroupItem value={ChartTimeRangeEnum.LAST_7DAYS}>
-              Last 7 days
+              {isLoading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Last 7 days"
+              )}
             </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -130,149 +134,145 @@ export function ChartAreaInteractive({
                 value={ChartTimeRangeEnum.LAST_3MONTHS}
                 className="rounded-lg"
               >
-                Last 3 months
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Last 3 months"
+                )}
               </SelectItem>
               <SelectItem
                 value={ChartTimeRangeEnum.LAST_30DAYS}
                 className="rounded-lg"
               >
-                Last 30 days
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Last 30 days"
+                )}
               </SelectItem>
               <SelectItem
                 value={ChartTimeRangeEnum.LAST_7DAYS}
                 className="rounded-lg"
               >
-                Last 7 days
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Last 7 days"
+                )}
               </SelectItem>
             </SelectContent>
           </Select>
         </CardAction>
       </CardHeader>
       <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        {isLoading ? (
-          <div className="flex h-[250px] items-center justify-center">
-            Loading...
-          </div>
-        ) : allZero ? (
-          <div className="text-muted-foreground flex h-[250px] items-center justify-center">
-            No data available for this period.
-          </div>
-        ) : (
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-[250px] w-full"
-          >
-            <AreaChart data={chartData}>
-              <defs>
-                <linearGradient
-                  id="fillPredictions"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor="var(--chart-1)"
-                    stopOpacity={1.0}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--chart-1)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-                <linearGradient
-                  id="fillReviewedPredictions"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor="var(--chart-2)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--chart-2)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-                <linearGradient
-                  id="fillApprovedReviewedPredictions"
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor="var(--chart-4)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--chart-4)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-              </defs>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  });
-                }}
-              />
-              <ChartTooltip
-                cursor={false}
-                defaultIndex={isMobile ? -1 : 10}
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => {
-                      return new Date(value).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      });
-                    }}
-                    indicator="dot"
-                  />
-                }
-              />
-              <Area
-                dataKey="predictions"
-                type="natural"
-                fill="url(#fillPredictions)"
-                stroke="var(--chart-1)"
-                stackId="a"
-              />
-              <Area
-                dataKey="reviewedPredictions"
-                type="natural"
-                fill="url(#fillReviewedPredictions)"
-                stroke="var(--chart-2)"
-                stackId="a"
-              />
-              <Area
-                dataKey="approvedReviewedPredictions"
-                type="natural"
-                fill="url(#fillApprovedReviewedPredictions)"
-                stroke="var(--chart-4)"
-                stackId="a"
-              />
-            </AreaChart>
-          </ChartContainer>
-        )}
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[250px] w-full"
+        >
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id="fillPredictions" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--chart-1)"
+                  stopOpacity={1.0}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--chart-1)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient
+                id="fillReviewedPredictions"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="var(--chart-2)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--chart-2)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              <linearGradient
+                id="fillApprovedReviewedPredictions"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="5%"
+                  stopColor="var(--chart-4)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--chart-4)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
+            />
+            <ChartTooltip
+              cursor={false}
+              defaultIndex={isMobile ? -1 : 10}
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(value) => {
+                    return new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    });
+                  }}
+                  indicator="dot"
+                />
+              }
+            />
+            <Area
+              dataKey="predictions"
+              type="natural"
+              fill="url(#fillPredictions)"
+              stroke="var(--chart-1)"
+              stackId="a"
+            />
+            <Area
+              dataKey="reviewedPredictions"
+              type="natural"
+              fill="url(#fillReviewedPredictions)"
+              stroke="var(--chart-2)"
+              stackId="a"
+            />
+            <Area
+              dataKey="approvedReviewedPredictions"
+              type="natural"
+              fill="url(#fillApprovedReviewedPredictions)"
+              stroke="var(--chart-4)"
+              stackId="a"
+            />
+          </AreaChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
