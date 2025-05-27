@@ -26,11 +26,12 @@ import {
   AlertCircle,
   Trash2,
 } from "lucide-react";
-import { useUploadDocuments } from "@/app/hooks/internal/use-upload-docs";
 import { useUploadStore } from "@/app/_store/uploadStore";
+import { useUploadDocuments } from "@/app/hooks/internal/doc-ingestion/use-upload-docs";
+import { API } from "@/lib/routes";
 
 // Define the SWR mutation key (should match the one in useUploadDocuments)
-const UPLOAD_API_KEY = "/api/internal/upload-doc-ingestion";
+const UPLOAD_API_KEY = API.internal.docIngestionUpload;
 
 export default function UploadCard() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -148,7 +149,7 @@ export default function UploadCard() {
     });
 
     // Trigger the upload. The Zustand store will handle the status updates and toasts.
-    upload(formData).catch((err) => {
+    upload(formData).catch((err: string) => {
       console.error("Error initiating upload promise from component:", err);
       // The error is already being stored in Zustand and handled by SonnerManager
     });
@@ -165,12 +166,9 @@ export default function UploadCard() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 p-6">
-      <div className="space-y-2 text-center">
+    <div className="space-y-6">
+      <div className="mb-4">
         <h1 className="text-3xl font-bold">Document Ingestion</h1>
-        <p className="text-muted-foreground">
-          Upload scientific PDF documents for processing and vector storage
-        </p>
       </div>
 
       <Card>

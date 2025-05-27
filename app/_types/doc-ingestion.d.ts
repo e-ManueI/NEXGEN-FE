@@ -24,3 +24,11 @@ export interface UseUploadDocumentsResult {
   error: Error | null;
   isUploading: boolean;
 }
+
+export interface DocStatusRow {
+  filename: string;
+  status: string;
+  exists?: boolean;
+  total_chunks?: number;
+  doc_id?: string;
+}

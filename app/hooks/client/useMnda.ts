@@ -5,6 +5,7 @@ import { ApiResponse } from "../../_types/api-response";
 import useSWRMutation from "swr/mutation";
 import acceptPolicyFetcher from "../../services/client/accept-mnda";
 import { checkMndaStatus } from "../../services/client/check-mnda-status";
+import { API } from "@/lib/routes";
 
 /**
  * Fetches the MndaResultResponse from the API.
@@ -19,7 +20,7 @@ export function useMnda(): {
   isError: boolean;
 } {
   const { data, error, isLoading } = useSWR<MndaResultResponse>(
-    "/api/client/policies/mnda",
+    API.client.mnda,
     fetchMnda,
   );
   return {
@@ -39,7 +40,7 @@ export function useMnda(): {
  * - isLoading: A boolean indicating if the policy is currently being accepted.
  */
 export function useAcceptPolicy(): UseAcceptPolicyResult {
-  const apiRoute = `/api/client/policies/mnda`;
+  const apiRoute = API.client.mnda;
   const { trigger, data, error, isMutating } = useSWRMutation<
     ApiResponse<boolean>,
     Error,
@@ -62,7 +63,7 @@ export function useAcceptPolicy(): UseAcceptPolicyResult {
 
       // 2) re-fetch the status endpoint so
       //    useMndaCheck() sees the new `true` value
-      await mutate("/api/client/policies/mnda/status");
+      await mutate(API.client.mndaStatus);
       return result;
     } catch (err) {
       console.error(err);
@@ -91,7 +92,7 @@ export function useMndaCheck(): {
   isError: boolean;
 } {
   const { data, error, isLoading } = useSWR(
-    "/api/client/policies/mnda/status",
+    API.client.mndaStatus,
     checkMndaStatus,
     {
       /**

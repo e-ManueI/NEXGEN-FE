@@ -10,6 +10,7 @@ import {
   generateAnalysisFetcher,
 } from "../services/predictions";
 import { UserType } from "../_db/enum";
+import { API } from "@/lib/routes";
 
 interface UseGenerateAnalysisOptions {
   role: UserType;
@@ -33,8 +34,8 @@ interface UseGenerateAnalysisOptions {
 export function usePredictions(userId?: string) {
   const key =
     userId !== undefined
-      ? `/api/predictions?user=${userId}`
-      : `/api/predictions`;
+      ? API.predictions.byUser(userId)
+      : API.predictions.root;
 
   const { data, error, isValidating, mutate } = useSWR<Prediction[]>(
     key,
@@ -60,7 +61,7 @@ export function usePredictions(userId?: string) {
  */
 export function useGenerateAnalysis({ role }: UseGenerateAnalysisOptions) {
   const { refresh: refreshPredictions } = usePredictions();
-  const apiRoute = `/api/predictions/generate-predictions?role=${role}`;
+  const apiRoute = API.predictions.generate(role);
 
   const { trigger, isMutating, error } = useSWRMutation<
     AnalysisResponse,

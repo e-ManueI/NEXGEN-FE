@@ -12,6 +12,7 @@ import versionContentFetcher from "@/app/services/internal/fetch-version-content
 import versionsFetcher from "@/app/services/internal/fetch-versions";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
+import { API } from "@/lib/routes";
 
 /**
  * A hook to fetch and manage the versions of a reviewed prediction.
@@ -26,9 +27,7 @@ import useSWRMutation from "swr/mutation";
 export function useReviewedVersions(predictionId: string) {
   const { data, error, isLoading, mutate } =
     useSWR<ReviewedPredictionVersionsResponse>(
-      predictionId
-        ? `/api/internal/reviewed-predictions/${predictionId}/versions`
-        : null,
+      predictionId ? API.internal.reviewedPredictions(predictionId) : null,
       versionsFetcher,
     );
 
@@ -51,7 +50,7 @@ export function useReviewedVersionContent(
 ) {
   const { data, error, isLoading } = useSWR<ReviewedVersionContentResponse>(
     predictionId && reviewedId
-      ? `/api/internal/reviewed-predictions/${predictionId}/versions/${reviewedId}`
+      ? API.internal.reviewedPredictionVersion(predictionId, reviewedId)
       : null,
     versionContentFetcher,
   );
@@ -74,7 +73,7 @@ export function useCreateNewVersion(predictionId: string) {
     throw new Error("predictionId is required");
   }
 
-  const apiUrl = `/api/internal/reviewed-predictions/${predictionId}/versions`;
+  const apiUrl = API.internal.reviewedPredictions(predictionId);
 
   const { trigger, data, error, isMutating } = useSWRMutation<
     CreateNewVersionResponse,
@@ -107,7 +106,7 @@ export function useCreateNewVersion(predictionId: string) {
  *   - `isApproving`: A boolean indicating whether the reviewed prediction version is currently being approved.
  */
 export function useApproveVersion() {
-  const apiUrl = `/api/internal/reviewed-predictions/approve/`;
+  const apiUrl = API.internal.reviewedPredictionsApprove;
 
   const { trigger, data, error, isMutating } = useSWRMutation<
     ApproveReviewedVersionResponse,

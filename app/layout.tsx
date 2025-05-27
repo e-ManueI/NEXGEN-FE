@@ -4,7 +4,7 @@ import { siteConfig } from "./_config/site";
 import { geistMono, latoSans } from "./_config/fonts";
 import { Toaster } from "@/components/ui/sonner";
 import Script from "next/script";
-import UploadToastManager from "@/components/containers/dashboard/document-upload/upload-sonner-manager";
+import UploadToastManager from "@/components/containers/dashboard/agent-data/upload-sonner-manager";
 
 export const metadata: Metadata = {
   title: siteConfig.name,

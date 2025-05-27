@@ -1,3 +1,4 @@
+import { API } from "@/lib/routes";
 import { CreateUserPayload, CreateUserResponse } from "@/app/_types/user-info";
 
 /**
@@ -10,7 +11,7 @@ import { CreateUserPayload, CreateUserResponse } from "@/app/_types/user-info";
 export default async function createUser(
   payload: CreateUserPayload,
 ): Promise<CreateUserResponse> {
-  const res = await fetch("/api/admin/users", {
+  const res = await fetch(API.admin.users, {
     method: "POST",
     body: JSON.stringify(payload),
   });

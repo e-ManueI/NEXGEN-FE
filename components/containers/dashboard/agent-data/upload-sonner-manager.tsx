@@ -1,11 +1,11 @@
 "use client";
 
+import { API } from "@/lib/routes";
 import { useUploadStore } from "@/app/_store/uploadStore";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-// TODO: Move to routes.ts or a constants file
-const UPLOAD_API_KEY = "/api/internal/upload-doc-ingestion";
+const UPLOAD_API_KEY = API.internal.docIngestionUpload;
 
 const UploadToastManager = () => {
   // Select the specific upload state we care about from the store

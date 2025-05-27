@@ -14,6 +14,7 @@ import fetchUserAnalytics from "@/app/services/admin/fetch-users-analytics";
 import fetchUserDetail from "@/app/services/admin/fetch-user-details";
 import createUser from "@/app/services/admin/create-user";
 import editUserFetcher from "@/app/services/admin/edit-user-details";
+import { API } from "@/lib/routes";
 
 /**
  * Custom hook to retrieve user analytics data such as total users, new users,
@@ -29,7 +30,7 @@ export function useUserAnalytics() {
   // Using SWR for data fetching and caching
   const { data, error, isLoading, mutate } =
     useSWR<UserAnalyticsResponse | null>(
-      "/api/admin/users/analytics", // Endpoint to fetch user analytics
+      API.admin.analytics, // Endpoint to fetch user analytics
       fetchUserAnalytics, // Function to fetch the analytics data
     );
 
@@ -57,7 +58,7 @@ export function useUserAnalytics() {
 export function useUsers() {
   // Destructure SWR response to manage user data
   const { data, error, isLoading, mutate } = useSWR<UserInfo[]>(
-    "/api/admin/users", // Endpoint to fetch the list of users
+    API.admin.users, // Endpoint to fetch the list of users
     fetchUsers, // Function responsible for fetching users data from the API
   );
 
@@ -82,7 +83,7 @@ export function useUsers() {
  */
 export function useUserDetail(userId: string) {
   const { data, error, isValidating, mutate } = useSWR<UserDetailResponse>(
-    `/api/admin/users/${userId}`,
+    userId ? API.admin.userDetail(userId) : null,
     fetchUserDetail,
   );
 
@@ -149,7 +150,7 @@ export function useEditUser() {
   const { refresh: refreshUsers } = useUsers();
   const { refresh: refreshAnalytics } = useUserAnalytics();
   const { trigger, isMutating, error } = useSWRMutation(
-    "/api/admin/users",
+    API.admin.users,
     editUserFetcher,
   );
 

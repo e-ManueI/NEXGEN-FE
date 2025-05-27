@@ -262,14 +262,14 @@ export function ChartAreaInteractive({
               type="natural"
               fill="url(#fillReviewedPredictions)"
               stroke="var(--chart-2)"
-              stackId="a"
+              stackId="b"
             />
             <Area
               dataKey="approvedReviewedPredictions"
               type="natural"
               fill="url(#fillApprovedReviewedPredictions)"
               stroke="var(--chart-4)"
-              stackId="a"
+              stackId="c"
             />
           </AreaChart>
         </ChartContainer>
