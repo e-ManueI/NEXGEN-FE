@@ -4,6 +4,9 @@ import { DataTabs } from "./data-tabs";
 import { usePredictions } from "@/app/hooks/usePredictions";
 import { useUsers } from "@/app/hooks/admin/useUsers";
 import WebLoader from "@/components/ui/web-loader";
+import { usePredictionStats } from "@/app/hooks/admin/use-prediction-stats";
+import { ChartTimeRangeEnum } from "@/app/_db/enum";
+import React from "react";
 
 export function AdminDashboard() {
   const {
@@ -12,6 +15,13 @@ export function AdminDashboard() {
     refresh: refreshP,
   } = usePredictions();
   const { users, loading: uLoading, refresh: refreshU } = useUsers();
+
+  // Add timeRange state for chart
+  const [timeRange, setTimeRange] = React.useState(
+    ChartTimeRangeEnum.LAST_3MONTHS,
+  );
+  const { data: predictionStats, isLoading: statsLoading } =
+    usePredictionStats(timeRange);
 
   const refreshAll = () => {
     refreshP();
@@ -35,7 +45,12 @@ export function AdminDashboard() {
   return (
     <>
       <AnalyticsCards data={cards} />
-      <ChartAreaInteractive />
+      <ChartAreaInteractive
+        data={predictionStats}
+        timeRange={timeRange}
+        setTimeRange={setTimeRange}
+        isLoading={statsLoading}
+      />
       <DataTabs
         predictions={predictions}
         users={users}
