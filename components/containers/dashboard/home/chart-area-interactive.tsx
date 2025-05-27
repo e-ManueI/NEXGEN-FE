@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ChartTimeRangeEnum } from "@/app/_db/enum";
-import { Loader2 } from "lucide-react";
 
 export const description = "An interactive area chart";
 
@@ -87,9 +86,11 @@ export function ChartAreaInteractive({
         <CardTitle>Total Predictions</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            Total for the last {timeRange}
+            Get quick insights into the total number of predictions made
           </span>
-          <span className="@[540px]/card:hidden">Last {timeRange}</span>
+          <span className="@[540px]/card:hidden">
+            Get quick insights into the total number of predictions made
+          </span>
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -99,26 +100,23 @@ export function ChartAreaInteractive({
             variant="outline"
             className="hidden *:data-[slot=toggle-group-item]:!px-4 @[767px]/card:flex"
           >
-            <ToggleGroupItem value={ChartTimeRangeEnum.LAST_3MONTHS}>
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Last 3 months"
-              )}
+            <ToggleGroupItem
+              value={ChartTimeRangeEnum.LAST_3MONTHS}
+              disabled={isLoading}
+            >
+              Last 3 months
             </ToggleGroupItem>
-            <ToggleGroupItem value={ChartTimeRangeEnum.LAST_30DAYS}>
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Last 30 days"
-              )}
+            <ToggleGroupItem
+              value={ChartTimeRangeEnum.LAST_30DAYS}
+              disabled={isLoading}
+            >
+              Last 30 days
             </ToggleGroupItem>
-            <ToggleGroupItem value={ChartTimeRangeEnum.LAST_7DAYS}>
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                "Last 7 days"
-              )}
+            <ToggleGroupItem
+              value={ChartTimeRangeEnum.LAST_7DAYS}
+              disabled={isLoading}
+            >
+              Last 7 days
             </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -133,32 +131,23 @@ export function ChartAreaInteractive({
               <SelectItem
                 value={ChartTimeRangeEnum.LAST_3MONTHS}
                 className="rounded-lg"
+                disabled={isLoading}
               >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  "Last 3 months"
-                )}
+                Last 3 months
               </SelectItem>
               <SelectItem
                 value={ChartTimeRangeEnum.LAST_30DAYS}
                 className="rounded-lg"
+                disabled={isLoading}
               >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  "Last 30 days"
-                )}
+                Last 30 days
               </SelectItem>
               <SelectItem
                 value={ChartTimeRangeEnum.LAST_7DAYS}
                 className="rounded-lg"
+                disabled={isLoading}
               >
-                {isLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  "Last 7 days"
-                )}
+                Last 7 days
               </SelectItem>
             </SelectContent>
           </Select>
