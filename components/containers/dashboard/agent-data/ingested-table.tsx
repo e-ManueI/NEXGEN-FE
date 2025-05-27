@@ -43,9 +43,6 @@ export default function IngestedTable() {
   // Track previous refreshing state to detect when refresh completes
   const prevRefreshing = React.useRef(false);
   React.useEffect(() => {
-    if (prevRefreshing.current && !docsRefreshing && !docsError) {
-      toast.success("Document status refreshed.");
-    }
     if (prevRefreshing.current && !docsRefreshing && docsError) {
       toast.error("Refresh failed", {
         description: "Could not refresh document status.",
