@@ -11,8 +11,6 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 
-// import { NavModels } from "@/components/dashboard/nav/nav-documents";
-// import { NavSecondary } from "@/components/dashboard/nav/nav-secondary";
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +25,7 @@ import { AppRoutes } from "@/lib/routes";
 import { useSession } from "next-auth/react";
 import { NavMain } from "./nav/nav-main";
 import { UserRole } from "@/app/_types/user-info";
-import { NavModels } from "./nav/nav-models";
+import { NavData } from "./nav/nav-data";
 import { UserType } from "@/app/_db/enum";
 
 export const modelRoles = [UserType.ADMIN, UserType.EXPERT];
@@ -131,7 +129,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavMain items={visibleNavMain} />
         {modelRoles.includes(session?.user.role as UserType) && (
-          <NavModels items={visibleModels} />
+          <NavData items={visibleModels} />
           // {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
         )}
       </SidebarContent>

@@ -21,13 +21,13 @@ import { NavItem } from "../app-sidebar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export function NavModels({ items }: { items: NavItem[] }) {
+export function NavData({ items }: { items: NavItem[] }) {
   // const { isMobile } = useSidebar();
   const pathname = usePathname();
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Model</SidebarGroupLabel>
+      <SidebarGroupLabel>Data</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>

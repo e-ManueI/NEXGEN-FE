@@ -9,6 +9,13 @@ export type Prediction = {
   isApproved: boolean;
 };
 
+export type PredictionStatsDataResponse = {
+  date: string;
+  predictions: number;
+  reviewedPredictions: number;
+  approvedReviewedPredictions: number;
+};
+
 export type GenerateAnalysisPayload = {
   Li_Conc_ppm: number;
   Na_Conc_ppm: number;

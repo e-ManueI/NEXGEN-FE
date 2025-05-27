@@ -34,3 +34,9 @@ export const PredictionStatus = {
   IN_PROGRESS: "in_progress",
   DONE: "done",
 };
+
+export const ChartTimeRangeEnum = {
+  LAST_3MONTHS: "90d",
+  LAST_30DAYS: "30d",
+  LAST_7DAYS: "7d",
+};
