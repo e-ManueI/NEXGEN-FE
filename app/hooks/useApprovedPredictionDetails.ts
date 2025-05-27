@@ -1,6 +1,7 @@
 import { PredictionResultResponse } from "@/app/_types/prediction";
 import approvedPredictionDetailsFetcher from "@/app/services/fetch-reviewed-prediction-details";
 import useSWR from "swr";
+import { API } from "@/lib/routes";
 
 /**
  * Custom hook to fetch and manage the state of reviewed prediction details.
@@ -14,7 +15,7 @@ import useSWR from "swr";
 export function useApprovedPredictionDetails(id: string) {
   // Use SWR to fetch prediction details if an ID is provided
   const { data, error, isLoading } = useSWR<PredictionResultResponse>(
-    id ? `/api/predictions/${id}` : null,
+    id ? API.predictions.details(id) : null,
     approvedPredictionDetailsFetcher,
   );
 

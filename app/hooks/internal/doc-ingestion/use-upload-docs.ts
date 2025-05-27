@@ -3,8 +3,9 @@ import {
   DocumentUploadApiResponse,
   UseUploadDocumentsResult,
 } from "@/app/_types/doc-ingestion";
-import { uploadDocuments } from "@/app/services/internal/upload-documents";
+import { uploadDocuments } from "@/app/services/internal/doc-ingestion/upload-documents";
 import useSWRMutation from "swr/mutation";
+import { API } from "@/lib/routes";
 
 /**
  * Hook for uploading documents to the document ingestion system.
@@ -13,7 +14,7 @@ import useSWRMutation from "swr/mutation";
  * @returns An object with the upload trigger function, data, error, and loading state.
  */
 export function useUploadDocuments(): UseUploadDocumentsResult {
-  const apiRoute = "/api/internal/upload-doc-ingestion";
+  const apiRoute = API.internal.docIngestionUpload;
   const { startUpload, updateUpload } = useUploadStore();
 
   const {
