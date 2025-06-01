@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import {
   DropdownMenu,
@@ -18,8 +17,8 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ColumnDef, CellContext } from "@tanstack/react-table";
-import { useDocsStatus } from "@/app/hooks/internal/doc-ingestion/use-docs-status";
+import { ColumnDef } from "@tanstack/react-table";
+import { useDocs } from "@/app/hooks/internal/doc-ingestion/use-docs-status";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Tooltip,
@@ -27,7 +26,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import { DocStatusRow } from "@/app/_types/doc-ingestion";
 
 export default function IngestedTable() {
   const {
@@ -38,7 +36,7 @@ export default function IngestedTable() {
     deleteDoc,
     fetchDocs,
     mutate,
-  } = useDocsStatus();
+  } = useDocs();
 
   // Track previous refreshing state to detect when refresh completes
   const prevRefreshing = React.useRef(false);
@@ -78,20 +76,14 @@ export default function IngestedTable() {
     }
   };
 
-  const columns = React.useMemo<ColumnDef<DocStatusRow>[]>(
+  // Only two columns: filename and actions
+  const columns = React.useMemo<ColumnDef<string>[]>(
     () => [
       {
-        accessorKey: "doc_id",
-        header: "Doc ID",
-        cell: (info: CellContext<DocStatusRow, unknown>) => (
-          <span className="">{(info.getValue() as string) ?? "-"}</span>
-        ),
-      },
-      {
-        accessorKey: "filename",
+        id: "filename",
         header: "Filename",
-        cell: (info: CellContext<DocStatusRow, unknown>) => {
-          const filename = info.getValue() as string;
+        cell: (info) => {
+          const filename = info.row.original;
           const display =
             filename.length > 24
               ? `${filename.slice(0, 50)}...${filename.slice(-30)}`
@@ -114,50 +106,33 @@ export default function IngestedTable() {
         },
       },
       {
-        accessorKey: "status",
-        header: "Status",
-        cell: (info: CellContext<DocStatusRow, unknown>) => (
-          <Badge
-            variant={
-              info.row.original.status === "found" ? "default" : "destructive"
-            }
-          >
-            {info.row.original.status}
-          </Badge>
-        ),
-      },
-      {
-        accessorKey: "total_chunks",
-        header: "Chunks",
-        cell: (info: CellContext<DocStatusRow, unknown>) =>
-          info.getValue() !== undefined ? String(info.getValue()) : "-",
-      },
-
-      {
         id: "actions",
         header: "Actions",
-        cell: ({ row }: CellContext<DocStatusRow, unknown>) => (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+        cell: (info) => {
+          const filename = info.row.original;
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
               {/* <DropdownMenuItem
                 onClick={() => handleCheckStatus(row.original.filename)}
               >
                 Check Status
               </DropdownMenuItem> */}
-              <DropdownMenuItem
-                onClick={() => handleDelete(row.original.filename)}
-                className="text-red-600"
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ),
+                <DropdownMenuItem
+                  onClick={() => handleDelete(filename)}
+                  className="text-red-600"
+                >
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
       },
     ],
     [handleDelete],
@@ -203,6 +178,7 @@ export default function IngestedTable() {
             <AlertDescription>{docsError}</AlertDescription>
           </Alert>
         )}
+        {/* docs is string[] */}
         <DataTable columns={columns} data={docs} loading={docsLoading} />
       </CardContent>
     </Card>

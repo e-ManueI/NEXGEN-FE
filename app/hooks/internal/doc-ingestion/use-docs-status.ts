@@ -1,9 +1,8 @@
 import useSWR, { mutate } from "swr";
 import {
-  fetchAllDocsStatus,
+  fetchAllDocs,
   deleteDocByFilename,
 } from "@/app/services/internal/doc-ingestion/docs-proxy";
-import { DocStatusRow } from "@/app/_types/doc-ingestion";
 import { API } from "@/lib/routes";
 
 const API_ENDPOINT = API.internal.docIngestion;
@@ -14,14 +13,14 @@ const API_ENDPOINT = API.internal.docIngestion;
  * @returns An object with the list of documents, loading state, error,
  *          function to fetch the documents, and a function to delete a document
  */
-export function useDocsStatus() {
+export function useDocs() {
   const {
     data: docs,
     error,
     isLoading: loading,
     isValidating: refreshing,
     mutate: mutateDocs,
-  } = useSWR<DocStatusRow[]>(API_ENDPOINT, fetchAllDocsStatus);
+  } = useSWR<string[]>(API_ENDPOINT, fetchAllDocs);
 
   const fetchDocs = () => mutate(API_ENDPOINT);
 
