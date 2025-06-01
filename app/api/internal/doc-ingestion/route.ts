@@ -32,24 +32,26 @@ export const GET = auth(async (req) => {
     }
     const data = await res.json();
     const fileNames: string[] = data.file_names || [];
-    const statusResults = await Promise.all(
-      fileNames.map(async (filename) => {
-        try {
-          const statusRes = await fetch(
-            `${DOCUMENT_INGESTION_API_URL}/check-file/${encodeURIComponent(filename)}`,
-            { cache: "no-store" },
-          );
-          if (!statusRes.ok) {
-            return { filename, status: "error", exists: false };
-          }
-          const statusData = await statusRes.json();
-          return { ...statusData };
-        } catch {
-          return { filename, status: "error", exists: false };
-        }
-      }),
-    );
-    return success(statusResults, "Fetched document statuses successfully");
+    // const statusResults = await Promise.all(
+    //   fileNames.map(async (filename) => {
+    //     try {
+    //       const statusRes = await fetch(
+    //         `${DOCUMENT_INGESTION_API_URL}/check-file/${encodeURIComponent(filename)}`,
+    //         { cache: "no-store" },
+    //       );
+    //       if (!statusRes.ok) {
+    //         return { filename, status: "error", exists: false };
+    //       }
+    //       const statusData = await statusRes.json();
+    //       return { ...statusData };
+    //     } catch {
+    //       return { filename, status: "error", exists: false };
+    //     }
+    //   }),
+    // );
+
+    console.log("Fetched file names:", fileNames);
+    return success(fileNames, "Fetched document statuses successfully");
   } catch (error) {
     console.error("Error in docs-proxy GET:", error);
     return failure("Unexpected error while fetching document statuses", 500);

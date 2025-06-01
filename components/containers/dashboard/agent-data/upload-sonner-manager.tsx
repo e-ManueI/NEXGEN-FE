@@ -36,7 +36,7 @@ const UploadToastManager = () => {
               "Document(s) upload initiated...",
               {
                 description:
-                  "Adding to Knowledge Base. This may take 2-3 minutes.",
+                  "Adding to Knowledge Base. Kindly refresh after 2-3 minutes.",
                 duration: Infinity, // Keep open until manually dismissed or updated
               },
             );
@@ -48,7 +48,7 @@ const UploadToastManager = () => {
             toast.message("Document(s) upload in progress...", {
               id: currentToastIdRef.current,
               description:
-                "Still adding to Knowledge Base. This may take 2-3 minutes.",
+                "Still adding to Knowledge Base. Kindly refresh after 2-3 minutes.",
             });
           }
           break;
