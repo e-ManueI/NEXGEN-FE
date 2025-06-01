@@ -1,6 +1,10 @@
 import { db } from "@/app/_db";
 import { PredictionStatus, UserType } from "@/app/_db/enum";
-import { predictionResult, reviewedPredictionResult } from "@/app/_db/schema";
+import {
+  predictionResult,
+  reviewedPredictionResult,
+  user,
+} from "@/app/_db/schema";
 import {
   failure,
   forbidden,
@@ -9,12 +13,13 @@ import {
   unauthorized,
 } from "@/lib/api-response";
 import { auth } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
 import { eq, and, ne } from "drizzle-orm";
 
 /**
  * Handles POST requests to /api/internal/reviewed-predictions/approve.
  *
- * This endpoint is used by the Expert Dashboard to approve or disapprove
+ * This endpoint is used by the Admin and Expert Dashboard to approve or disapprove
  * reviewed predictions. It expects a JSON payload with the following fields:
  *
  * - `approve`: A boolean indicating whether the reviewed prediction should
@@ -120,11 +125,44 @@ export const POST = auth(async (req) => {
         isApproved: reviewedPredictionResult.isApproved,
         createdAt: reviewedPredictionResult.createdAt,
         updatedAt: reviewedPredictionResult.updatedAt,
+        predictionResultId: reviewedPredictionResult.predictionResultId,
       });
 
     if (!updatedVersion) {
       return notFound("Reviewed Prediction version not found", 200);
     }
+
+    // --- EMAIL NOTIFICATION LOGIC ---
+    if (approve) {
+      // Fetch the prediction result to get companyId
+      const [prediction] = await db
+        .select({ companyId: predictionResult.companyId })
+        .from(predictionResult)
+        .where(eq(predictionResult.id, updatedVersion.predictionResultId))
+        .limit(1);
+      if (prediction?.companyId) {
+        // Fetch all users for this company
+        const users = await db
+          .select({ email: user.email, name: user.name })
+          .from(user)
+          .where(eq(user.companyId, prediction.companyId));
+        const emails = users
+          .map((u) => u.email)
+          .filter((e): e is string => Boolean(e));
+        if (emails.length > 0) {
+          // Compose result link TODO: Might use MjML
+          const resultLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/predictions/${updatedVersion.predictionResultId}`;
+          const subject = "Your prediction result is now ready";
+          const html = `<p>Hello,</p><p>Your prediction result is now available. <a href="${resultLink}">View Result</a></p>`;
+          try {
+            await sendEmail({ to: emails, subject, html });
+          } catch (e) {
+            console.error("Failed to send result notification email:", e);
+          }
+        }
+      }
+    }
+    // --- END EMAIL LOGIC ---
 
     return success(
       { updatedVersion },

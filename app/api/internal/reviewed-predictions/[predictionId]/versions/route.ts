@@ -13,6 +13,8 @@ import { auth } from "@/lib/auth";
 import { uploadS3Object } from "@/lib/s3/s3";
 import { eq, and, desc } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import { sendEmail } from "@/lib/email";
+import { user } from "@/app/_db/schema";
 
 // TODO: ADD ZOD VALIDATIONS TO POST PAYLOADS
 /**
@@ -83,7 +85,7 @@ export const GET = auth(
 );
 
 /**
- * Creates a new reviewed version for a prediction.
+ * Creates a new reviewed version for a prediction and either SAVE IT or SAVE AND APPROVE.
  *
  * @param req - The incoming HTTP request object.
  * @param params - An object containing route parameters, including the prediction ID.
@@ -219,7 +221,40 @@ export const POST = auth(
           isApproved: reviewedPredictionResult.isApproved,
           createdAt: reviewedPredictionResult.createdAt,
           updatedAt: reviewedPredictionResult.updatedAt,
+          predictionResultId: reviewedPredictionResult.predictionResultId,
         });
+
+      // --- EMAIL NOTIFICATION LOGIC ---
+      if (approve) {
+        // Fetch the prediction result to get companyId
+        const [prediction] = await db
+          .select({ companyId: predictionResult.companyId })
+          .from(predictionResult)
+          .where(eq(predictionResult.id, predictionId))
+          .limit(1);
+        if (prediction?.companyId) {
+          // Fetch all users for this company
+          const users = await db
+            .select({ email: user.email, name: user.name })
+            .from(user)
+            .where(eq(user.companyId, prediction.companyId));
+          const emails = users
+            .map((u) => u.email)
+            .filter((e): e is string => Boolean(e));
+          if (emails.length > 0) {
+            // Compose result link TODO: Might use MjML
+            const resultLink = `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/predictions/${predictionId}`;
+            const subject = "Your prediction result is now ready";
+            const html = `<p>Hello,</p><p>Your prediction result is now available. <a href="${resultLink}">View Result</a></p>`;
+            try {
+              await sendEmail({ to: emails, subject, html });
+            } catch (e) {
+              console.error("Failed to send result notification email:", e);
+            }
+          }
+        }
+      }
+      // --- END EMAIL LOGIC ---
 
       // Return the newly created version
       return success(
