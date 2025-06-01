@@ -52,6 +52,14 @@ table company_profile {
   updated_at timestamp [not null]
 }
 
+table password_reset_token {
+  id uuid [pk, not null, default: `gen_random_uuid()`]
+  user_id uuid [not null]
+  token_hash varchar(255) [not null]
+  expires_at timestamp [not null]
+  created_at timestamp [not null, default: `now()`]
+}
+
 table policy {
   id uuid [pk, not null, default: `gen_random_uuid()`]
   name varchar(250) [not null]
@@ -191,6 +199,8 @@ ref company_brine_site_brine_location_id_company_brine_location_id_fk: company_b
 ref company_profile_registration_status_id_registration_status_id_fk: company_profile.registration_status_id > registration_status.id [delete: cascade, update: no action]
 
 ref company_profile_estimated_annual_revenue_id_revenue_range_id_fk: company_profile.estimated_annual_revenue_id > revenue_range.id [delete: cascade, update: no action]
+
+ref password_reset_token_user_id_user_id_fk: password_reset_token.user_id > user.id [delete: cascade, update: no action]
 
 ref policy_policy_type_id_policy_type_id_fk: policy.policy_type_id > policy_type.id [delete: cascade, update: no action]
 

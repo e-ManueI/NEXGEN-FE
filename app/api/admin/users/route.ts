@@ -132,7 +132,7 @@ export const POST = auth(async (req) => {
     }
 
     // 2. Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 14);
 
     // 3. Upsert company
     let companyId: string;
