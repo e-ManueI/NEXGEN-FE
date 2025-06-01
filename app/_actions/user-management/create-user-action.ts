@@ -64,7 +64,7 @@ export async function createUserAction(formData: FormData): Promise<Result> {
 
   try {
     // 4. Hash the password
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, 14);
 
     // 5. Upsert the company
     let companyId: string;

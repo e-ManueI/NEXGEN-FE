@@ -115,12 +115,12 @@ export function LoginForm({
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  {/* <Link
-                    href="#"
+                  <Link
+                    href={AppRoutes.forgotPassword}
                     className="ml-auto text-sm underline-offset-2 hover:underline"
                   >
                     Forgot your password?
-                  </Link> */}
+                  </Link>
                 </div>
                 <Input
                   id="password"
@@ -154,7 +154,10 @@ export function LoginForm({
               {/* Footer */}
               <div className="text-center text-sm">
                 Don&apos;t have an account?{" "}
-                <Link href="/signup" className="underline underline-offset-4">
+                <Link
+                  href={AppRoutes.signup}
+                  className="underline underline-offset-4"
+                >
                   Sign up
                 </Link>
               </div>

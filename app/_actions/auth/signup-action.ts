@@ -54,7 +54,7 @@ export async function signupAction(
   // 3. Hash the password + make iDs
   let hashedPassword: string;
   try {
-    hashedPassword = await bcrypt.hash(password, 10);
+    hashedPassword = await bcrypt.hash(password, 14);
   } catch (hashErr) {
     console.error("Error hashing password:", hashErr);
     return {

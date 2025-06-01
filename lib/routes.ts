@@ -4,6 +4,8 @@ export const AppRoutes = {
   login: "/login",
   signup: "/signup",
   mnda: "/signup/mnda",
+  resetPassword: "/reset-password",
+  forgotPassword: "/forgot-password",
 
   // Dashboard routes
   dashboard: "/dashboard",
@@ -45,5 +47,9 @@ export const API = {
   analytics: {
     predictionStats: (timeRange: string) =>
       `/api/admin/analytics/prediction-stats?timeRange=${timeRange}`,
+  },
+  auth: {
+    resetPassword: "/api/auth/reset-password" as const,
+    forgotPassword: "/api/auth/forgot-password" as const,
   },
 };
