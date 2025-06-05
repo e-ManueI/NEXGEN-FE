@@ -35,8 +35,7 @@ const UploadToastManager = () => {
             const newToastId = toast.loading(
               "Document(s) upload initiated...",
               {
-                description:
-                  "Adding to Knowledge Base. Kindly refresh after 2-3 minutes.",
+                description: "Adding to Knowledge Base.",
                 duration: Infinity, // Keep open until manually dismissed or updated
               },
             );
@@ -47,17 +46,17 @@ const UploadToastManager = () => {
             // Update existing toast message if it's still pending
             toast.message("Document(s) upload in progress...", {
               id: currentToastIdRef.current,
-              description:
-                "Still adding to Knowledge Base. Kindly refresh after 2-3 minutes.",
+              description: "Still adding to Knowledge Base. Please wait.",
             });
           }
           break;
 
         case "success":
           if (currentToastIdRef.current) {
-            toast.success("Document(s) processed!", {
+            toast.success("Document(s) in processing!", {
               id: currentToastIdRef.current, // Update the existing toast
-              description: "Successfully added to Knowledge Base.",
+              description:
+                "Successfully received for chunking. Kindly refresh after 2-3 minutes.",
               duration: Infinity, // Auto-dismiss after 5 seconds
               closeButton: true,
             });
